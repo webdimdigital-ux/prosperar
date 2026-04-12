@@ -26,8 +26,6 @@ services:
     image: nginx:alpine
     container_name: prosperar_nginx
     restart: unless-stopped
-    ports:
-      - "8000:80"
     volumes:
       - ./backend:/var/www
       - ./docker/nginx/backend.conf:/etc/nginx/conf.d/default.conf
