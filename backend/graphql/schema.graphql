@@ -1,0 +1,250 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
+
+type Query {
+    me: User @auth
+
+    exams(
+        filter: ExamFilterInput
+        sort: ExamSortInput
+        search: String
+        first: Int = 15
+        page: Int
+    ): [Exam!]! @paginate(defaultCount: 15, builder: "App\\GraphQL\\Queries\\ExamsQuery") @guard
+
+    exam(id: ID! @eq): Exam @find @guard
+
+    clients(
+        search: String
+        filter: ClientFilterInput
+        sort: ClientSortInput
+        first: Int = 15
+        page: Int
+    ): [User!]! @paginate(defaultCount: 15, builder: "App\\GraphQL\\Queries\\ClientsQuery") @guard
+
+    hospitals(
+        search: String
+        filter: HospitalFilterInput
+        sort: HospitalSortInput
+        first: Int = 15
+        page: Int
+    ): [Hospital!]! @paginate(defaultCount: 15, builder: "App\\GraphQL\\Queries\\HospitalsQuery") @guard
+}
+
+type Mutation {
+    login(email: String!, password: String!): AuthPayload
+        @field(resolver: "App\\GraphQL\\Mutations\\LoginMutation")
+
+    logout: Boolean
+        @field(resolver: "App\\GraphQL\\Mutations\\LogoutMutation") @guard
+
+    register(input: RegisterInput!): User
+        @field(resolver: "App\\GraphQL\\Mutations\\RegisterMutation")
+
+    forgotPassword(email: String!): Boolean
+        @field(resolver: "App\\GraphQL\\Mutations\\ForgotPasswordMutation")
+
+    resetPassword(input: ResetPasswordInput!): Boolean
+        @field(resolver: "App\\GraphQL\\Mutations\\ResetPasswordMutation")
+
+    updateProfile(input: UpdateProfileInput!): User
+        @field(resolver: "App\\GraphQL\\Mutations\\UpdateProfileMutation") @guard
+
+    uploadExam(input: UploadExamInput!): ExamUploadResult
+        @field(resolver: "App\\GraphQL\\Mutations\\UploadExamMutation") @guard
+
+    updateExamStatus(id: ID!, status: ExamStatus!): Exam
+        @field(resolver: "App\\GraphQL\\Mutations\\UpdateExamStatusMutation") @guard
+
+    createClient(input: CreateClientInput!): User
+        @field(resolver: "App\\GraphQL\\Mutations\\CreateClientMutation") @guard
+
+    updateClient(id: ID!, input: UpdateClientInput!): User
+        @field(resolver: "App\\GraphQL\\Mutations\\UpdateClientMutation") @guard
+
+    createHospital(input: HospitalInput!): Hospital
+        @field(resolver: "App\\GraphQL\\Mutations\\CreateHospitalMutation") @guard
+
+    updateHospital(id: ID!, input: HospitalInput!): Hospital
+        @field(resolver: "App\\GraphQL\\Mutations\\UpdateHospitalMutation") @guard
+
+    deleteExam(id: ID!): Boolean
+        @field(resolver: "App\\GraphQL\\Mutations\\DeleteExamMutation") @guard
+}
+
+# ─── Types ───────────────────────────────────────────────────────────────────
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    cpf: String!
+    phone: String
+    birth_date: String
+    role: UserRole!
+    status: UserStatus!
+    hospital: Hospital
+    exams: [Exam!]
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Hospital {
+    id: ID!
+    name: String!
+    cnpj: String!
+    address: String
+    city: String
+    state: String
+    phone: String
+    email: String
+    status: HospitalStatus!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Exam {
+    id: ID!
+    cpf: String!
+    name: String!
+    exam_date: String!
+    file_path: String!
+    observations: String
+    status: ExamStatus!
+    technician: String
+    sex: String
+    birth_date: String
+    height: String
+    weight: String
+    age: String
+    smoking: String
+    diagnosis: String
+    medico: String
+    crm: String
+    client: User
+    hospital: Hospital!
+    uploadedBy: User!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type AuthPayload {
+    token: String!
+    user: User!
+}
+
+type ExamUploadResult {
+    total: Int!
+    processed: Int!
+    failed: Int!
+    errors: [PageError!]
+    exams: [Exam!]
+}
+
+type PageError {
+    page: Int!
+    reason: String!
+}
+
+# ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum UserRole { client admin hospital }
+enum UserStatus { active inactive }
+enum ExamStatus { pending available delivered error }
+enum HospitalStatus { active inactive }
+enum SortOrder { ASC DESC }
+
+# ─── Inputs ──────────────────────────────────────────────────────────────────
+
+input RegisterInput {
+    name: String!
+    email: String!
+    cpf: String!
+    phone: String
+    birth_date: String
+    password: String!
+    password_confirmation: String!
+}
+
+input ResetPasswordInput {
+    token: String!
+    email: String!
+    password: String!
+    password_confirmation: String!
+}
+
+input UpdateProfileInput {
+    name: String
+    phone: String
+    password: String
+    password_confirmation: String
+}
+
+input UploadExamInput {
+    hospital_id: ID!
+    exam_date: String!
+    observations: String
+    file: Upload!
+}
+
+input CreateClientInput {
+    name: String!
+    email: String!
+    cpf: String!
+    phone: String
+    birth_date: String
+    password: String!
+    hospital_id: ID
+    status: UserStatus
+}
+
+input UpdateClientInput {
+    name: String
+    email: String
+    phone: String
+    password: String
+    status: UserStatus
+}
+
+input HospitalInput {
+    name: String!
+    cnpj: String!
+    address: String
+    city: String
+    state: String
+    phone: String
+    email: String
+    status: HospitalStatus
+    password: String
+}
+
+input ExamFilterInput {
+    status: ExamStatus
+    hospital_id: ID
+    date_from: String
+    date_to: String
+}
+
+input ExamSortInput {
+    column: String
+    order: SortOrder
+}
+
+input ClientFilterInput {
+    status: UserStatus
+}
+
+input ClientSortInput {
+    column: String
+    order: SortOrder
+}
+
+input HospitalFilterInput {
+    status: HospitalStatus
+}
+
+input HospitalSortInput {
+    column: String
+    order: SortOrder
+}

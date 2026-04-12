@@ -1,0 +1,26 @@
+import { gql } from '@apollo/client/core'
+
+export const GET_CLIENTS = gql`
+  query GetClients($search: String, $filter: ClientFilterInput, $sort: ClientSortInput, $first: Int, $page: Int) {
+    clients(search: $search, filter: $filter, sort: $sort, first: $first, page: $page) {
+      data { id name email cpf phone status created_at }
+      paginatorInfo { total currentPage lastPage hasMorePages perPage }
+    }
+  }
+`
+
+export const CREATE_CLIENT = gql`
+  mutation CreateClient($input: CreateClientInput!) {
+    createClient(input: $input) {
+      id name email cpf
+    }
+  }
+`
+
+export const UPDATE_CLIENT = gql`
+  mutation UpdateClient($id: ID!, $input: UpdateClientInput!) {
+    updateClient(id: $id, input: $input) {
+      id name email phone status
+    }
+  }
+`

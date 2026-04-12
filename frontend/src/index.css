@@ -1,0 +1,94 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  /* Glazey Design System - Updated */
+  --background: #F5F6FA;
+  --foreground: #4a5255;
+
+  --card: #FFFFFF;
+  --card-foreground: #2E3A59;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #2E3A59;
+
+  /* Tema de cores principal */
+  --primary: #34C38F;
+  --primary-foreground: #FFFFFF;
+  --primary-dark: #2BAF7A;
+
+  --secondary: #49cf9d;
+  --secondary-foreground: #FFFFFF;
+
+  --accent: #34C38F;
+  --accent-foreground: #FFFFFF;
+
+  --ring: #34C38F;
+
+  /* Cores adicionais mínimas para manter o design coerente */
+  --background: #F5F6FA;
+  --foreground: #2E3A59;
+  --card: #FFFFFF;
+  --border: #E8ECF4;
+  --input: #D5DCE8;
+  --radius: 0.75rem;
+
+  /* Status */
+  --status-available: #49cf9d;
+  --status-available-bg: #E6F7EF;
+
+  --status-pending: #F5A623;
+  --status-pending-bg: #FEF5E6;
+
+  --status-error: #E8624A;
+  --status-error-bg: #FDEAE6;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(46, 58, 89, 0.06);
+  --shadow-md: 0 4px 16px rgba(46, 58, 89, 0.10);
+  --shadow-lg: 0 8px 32px rgba(46, 58, 89, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-size: 14px;
+}
+
+#root {
+  min-height: 100vh;
+}
