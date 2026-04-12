@@ -51,7 +51,6 @@ export function HospitalExamListPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-lg font-semibold">Exames</h1>
       <DataTable
         columns={columns as never}
         data={data}

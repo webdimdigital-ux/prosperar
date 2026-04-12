@@ -89,7 +89,6 @@ export function AdminExamListPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-lg font-semibold">Todos os Exames</h1>
 
       <Dialog open={!!editExam} onOpenChange={open => !open && setEditExam(null)}>
         <DialogContent>

@@ -60,26 +60,20 @@ export function UploadExamPage() {
     <div className="max-w-lg space-y-4">
 
       {serverError && (
-        <div
-          className="p-4 text-sm text-red-700"
-          style={{ background: '#FEE2E2', borderRadius: 16 }}
-        >
+        <div className="p-4 text-sm text-red-700 bg-[#FEE2E2] rounded-2xl">
           {serverError}
         </div>
       )}
 
       {result && (
-        <div
-          className="p-4 space-y-2 text-sm"
-          style={{ background: '#EAF7F2', borderRadius: 16 }}
-        >
-          <p className="font-semibold" style={{ color: '#2BAF7A' }}>
+        <div className="p-4 space-y-2 text-sm bg-[#EAF7F2] rounded-2xl">
+          <p className="font-semibold text-[#2BAF7A]">
             Upload concluído: {result.processed} de {result.total} páginas processadas com sucesso.
           </p>
           {result.failed > 0 && (
             <div>
-              <p className="font-medium" style={{ color: '#EF4444' }}>Páginas com erro:</p>
-              <ul className="list-disc list-inside" style={{ color: '#EF4444' }}>
+              <p className="font-medium text-red-500">Páginas com erro:</p>
+              <ul className="list-disc list-inside text-red-500">
                 {result.errors.map(e => <li key={e.page}>Página {e.page}: {e.reason}</li>)}
               </ul>
             </div>
@@ -87,18 +81,8 @@ export function UploadExamPage() {
         </div>
       )}
 
-      <div
-        style={{
-          background: 'white',
-          borderRadius: 20,
-          boxShadow: '0 4px 24px rgba(46,58,89,0.08)',
-          padding: 24,
-        }}
-      >
-        <p
-          className="text-base font-semibold mb-5"
-          style={{ color: '#2E3A59', fontFamily: 'Poppins, sans-serif' }}
-        >
+      <div className="bg-white rounded-[20px] shadow-[0_4px_24px_rgba(46,58,89,0.08)] p-6">
+        <p className="text-base font-semibold mb-5 text-[#2E3A59]">
           Dados do exame
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -149,10 +133,7 @@ export function UploadExamPage() {
               />
 
               {file ? (
-                <div
-                  className="flex items-center gap-3 px-4 py-3 border"
-                  style={{ borderColor: 'var(--primary)', backgroundColor: '#f0f7ff' }}
-                >
+                <div className="flex items-center gap-3 px-4 py-3 border border-primary bg-[#f0f7ff] rounded-xl">
                   <FileTextIcon className="size-5 text-primary shrink-0" strokeWidth={1.5} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[#2E3A59] truncate">{file.name}</p>
@@ -173,7 +154,7 @@ export function UploadExamPage() {
                   onDragLeave={handleDragLeave}
                   onClick={() => fileRef.current?.click()}
                   className={cn(
-                    'flex flex-col items-center justify-center gap-2 py-8 border-2 border-dashed cursor-pointer transition-colors',
+                    'flex flex-col items-center justify-center gap-2 py-8 border-2 border-dashed rounded-xl cursor-pointer transition-colors',
                     dragOver
                       ? 'border-primary bg-[#f0f7ff]'
                       : errors.file

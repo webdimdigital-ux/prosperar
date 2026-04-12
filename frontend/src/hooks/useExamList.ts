@@ -5,7 +5,7 @@ import { GET_EXAMS } from '@/graphql/queries/exams'
 export function useExamList() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const [perPage, setPerPage] = useState(15)
+  const [perPage, setPerPage] = useState(10)
   const [sortColumn, setSortColumn] = useState('created_at')
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC')
   const [filter, setFilter] = useState<Record<string, string>>({})

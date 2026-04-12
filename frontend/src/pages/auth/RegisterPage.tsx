@@ -18,7 +18,7 @@ const emptyForm = { name: '', email: '', cpf: '', phone: '', birth_date: '', bir
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
-  return <p className="text-xs mt-1" style={{ color: '#E8624A' }}>{message}</p>
+  return <p className="text-xs mt-1 text-[#E8624A]">{message}</p>
 }
 
 export function RegisterPage() {
@@ -92,26 +92,17 @@ export function RegisterPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left panel — branding */}
-      <div
-        className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 text-white relative overflow-hidden"
-        style={{ background: 'linear-gradient(145deg, #2E3A59 0%, #1a2d45 100%)' }}
-      >
-        <div
-          className="absolute -top-32 -right-32 w-125 h-125 rounded-full opacity-10"
-          style={{ background: '#34C38F' }}
-        />
-        <div
-          className="absolute -bottom-24 -left-24 w-95 h-95 rounded-full opacity-10"
-          style={{ background: '#34C38F' }}
-        />
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 text-white relative overflow-hidden bg-[linear-gradient(145deg,#2E3A59_0%,#1a2d45_100%)]">
+        <div className="absolute -top-32 -right-32 w-125 h-125 rounded-full opacity-10 bg-[#34C38F]" />
+        <div className="absolute -bottom-24 -left-24 w-95 h-95 rounded-full opacity-10 bg-[#34C38F]" />
 
         <div className="relative z-10" />
 
         <div className="relative z-10 space-y-8">
           <div>
-            <h1 className="text-4xl font-bold leading-tight mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <h1 className="text-4xl font-bold leading-tight mb-4">
               Crie sua conta<br />
-              <span style={{ color: '#34C38F' }}>em poucos passos.</span>
+              <span className="text-[#34C38F]">em poucos passos.</span>
             </h1>
             <p className="text-base opacity-70 leading-relaxed max-w-sm">
               Cadastre-se e tenha acesso completo aos seus exames médicos de forma rápida e segura.
@@ -120,7 +111,7 @@ export function RegisterPage() {
           <ul className="space-y-3">
             {FEATURES.map(f => (
               <li key={f} className="flex items-start gap-3 text-sm opacity-80">
-                <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" style={{ color: '#34C38F' }} />
+                <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-[#34C38F]" />
                 {f}
               </li>
             ))}
@@ -131,17 +122,17 @@ export function RegisterPage() {
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto" style={{ background: '#F5F6FA' }}>
+      <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto bg-[#F5F6FA]">
         <div className="w-full max-w-105 py-4">
           <div className="flex justify-center mb-8 lg:hidden">
             <img src="https://prosperar.med.br/images/logo.png" alt="Prosperar" className="h-10 w-auto object-contain" />
           </div>
 
-          <div className="bg-white rounded-xs p-8" style={{ boxShadow: '0 2px 8px rgba(46,58,89,0.06)' }}>
-            <h2 className="text-2xl font-bold mb-1" style={{ color: '#2E3A59', fontFamily: 'Poppins, sans-serif' }}>
+          <div className="bg-white rounded-2xl p-8 shadow-[0_2px_8px_rgba(46,58,89,0.06)]">
+            <h2 className="text-2xl font-bold mb-1 text-[#2E3A59]">
               Criar conta
             </h2>
-            <p className="text-sm mb-6" style={{ color: '#7C8DB5' }}>
+            <p className="text-sm mb-6 text-[#7C8DB5]">
               Preencha seus dados para se cadastrar.
             </p>
 
@@ -153,32 +144,32 @@ export function RegisterPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div className="space-y-1.5">
-                <Label htmlFor="name" style={{ color: '#2E3A59' }}>Nome completo</Label>
+                <Label htmlFor="name" className="text-[#2E3A59]">Nome completo</Label>
                 <Input id="name" type="text" value={form.name} onChange={set('name')} />
                 <FieldError message={errors.name} />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="email" style={{ color: '#2E3A59' }}>E-mail</Label>
+                <Label htmlFor="email" className="text-[#2E3A59]">E-mail</Label>
                 <Input id="email" type="email" placeholder="seu@email.com" value={form.email} onChange={set('email')} />
                 <FieldError message={errors.email} />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="cpf" style={{ color: '#2E3A59' }}>CPF</Label>
+                  <Label htmlFor="cpf" className="text-[#2E3A59]">CPF</Label>
                   <Input id="cpf" type="text" placeholder="000.000.000-00" value={form.cpf} onChange={set('cpf')} inputMode="numeric" />
                   <FieldError message={errors.cpf} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="phone" style={{ color: '#2E3A59' }}>Telefone</Label>
+                  <Label htmlFor="phone" className="text-[#2E3A59]">Telefone</Label>
                   <Input id="phone" type="text" placeholder="(00) 000000000" value={form.phone} onChange={set('phone')} inputMode="numeric" />
                   <FieldError message={errors.phone} />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="birth_date_display" style={{ color: '#2E3A59' }}>Data de nascimento</Label>
+                <Label htmlFor="birth_date_display" className="text-[#2E3A59]">Data de nascimento</Label>
                 <Input
                   id="birth_date_display"
                   type="text"
@@ -192,30 +183,25 @@ export function RegisterPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="password" style={{ color: '#2E3A59' }}>Senha</Label>
+                  <Label htmlFor="password" className="text-[#2E3A59]">Senha</Label>
                   <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={set('password')} />
                   <FieldError message={errors.password} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="password_confirmation" style={{ color: '#2E3A59' }}>Confirmar senha</Label>
+                  <Label htmlFor="password_confirmation" className="text-[#2E3A59]">Confirmar senha</Label>
                   <Input id="password_confirmation" type="password" placeholder="••••••••" value={form.password_confirmation} onChange={set('password_confirmation')} />
                   <FieldError message={errors.password_confirmation} />
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full mt-2 font-semibold"
-                style={{ background: '#34C38F', color: '#fff', border: 'none' }}
-              >
+              <Button type="submit" disabled={loading} className="w-full mt-2">
                 {loading ? 'Criando conta...' : 'Criar conta'}
               </Button>
             </form>
 
-            <p className="mt-5 text-center text-sm" style={{ color: '#7C8DB5' }}>
+            <p className="mt-5 text-center text-sm text-[#7C8DB5]">
               Já tem uma conta?{' '}
-              <Link to="/login" className="font-semibold hover:underline" style={{ color: '#34C38F' }}>
+              <Link to="/login" className="font-semibold hover:underline text-[#34C38F]">
                 Entrar
               </Link>
             </p>

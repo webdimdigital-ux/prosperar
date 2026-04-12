@@ -6,7 +6,7 @@ import { LOGOUT } from '@/graphql/mutations/auth'
 import {
   MenuIcon, LogOutIcon, UserIcon, LayoutDashboardIcon,
   UploadIcon, UsersIcon, BuildingIcon, FileTextIcon,
-  ChevronDownIcon, BellIcon, SearchIcon,
+  ChevronDownIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -25,8 +25,7 @@ const navByRole: Record<string, NavItem[]> = {
     { label: 'Unidades',     to: '/admin/hospitals',  icon: <BuildingIcon className="size-[18px]" strokeWidth={1.5} /> },
   ],
   hospital: [
-    { label: 'Exames',    to: '/hospital/exams',   icon: <FileTextIcon className="size-[18px]" strokeWidth={1.5} /> },
-    { label: 'Pacientes', to: '/hospital/clients', icon: <UsersIcon className="size-[18px]" strokeWidth={1.5} /> },
+    { label: 'Exames', to: '/hospital/exams', icon: <FileTextIcon className="size-[18px]" strokeWidth={1.5} /> },
   ],
 }
 
@@ -35,9 +34,6 @@ const roleLabel: Record<string, string> = {
   hospital: 'Unidade',
   client:   'Paciente',
 }
-
-const GAP         = 20
-const PADDING     = 16
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
@@ -71,31 +67,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     )?.label ?? 'Início'
 
   return (
-    /* ── Viewport root ── */
-    <div
-      style={{
-        height: '100vh',
-        overflow: 'hidden',
-        display: 'flex',
-        background: 'linear-gradient(135deg, #EEF0FF 0%, #E8F7F2 100%)',
-        fontFamily: 'Poppins, sans-serif',
-        padding: PADDING,
-        gap: GAP,
-      }}
-    >
+    <div className="h-screen overflow-hidden flex bg-[linear-gradient(135deg,#EEF0FF_0%,#E8F7F2_100%)] p-4 gap-5">
+
       {/* ══════════════════ SIDEBAR CARD ══════════════════ */}
-      <aside
-        className={cn(
-          'flex-col bg-white transition-transform duration-200 shrink-0',
-          /* desktop: always visible  |  mobile: slide in/out */
-          'hidden lg:flex w-[230px]',
-        )}
-        style={{
-          borderRadius: 20,
-          boxShadow: '0 4px 24px rgba(46,58,89,0.08)',
-          overflow: 'hidden',
-        }}
-      >
+      <aside className="hidden lg:flex flex-col bg-white shrink-0 w-57.5 rounded-[20px] shadow-[0_4px_24px_rgba(46,58,89,0.08)] overflow-hidden">
         <SidebarContent
           nav={nav}
           user={user}
@@ -114,17 +89,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             className="fixed inset-0 z-40 bg-black/30 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside
-            className="fixed inset-y-0 left-0 z-50 flex flex-col bg-white lg:hidden"
-            style={{
-              width: 230 + PADDING,
-              borderRadius: '0 20px 20px 0',
-              boxShadow: '4px 0 24px rgba(46,58,89,0.12)',
-              padding: PADDING,
-              paddingLeft: PADDING,
-              overflow: 'hidden',
-            }}
-          >
+          <aside className="fixed inset-y-0 left-0 z-50 flex flex-col bg-white lg:hidden w-61.5 rounded-r-[20px] shadow-[4px_0_24px_rgba(46,58,89,0.12)] p-4 overflow-hidden">
             <SidebarContent
               nav={nav}
               user={user}
@@ -139,207 +104,70 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       )}
 
       {/* ══════════════════ MAIN COLUMN ══════════════════ */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
 
-        {/* ── Topbar — transparent, no background ── */}
-        <header
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            height: 60,
-            flexShrink: 0,
-            background: 'transparent',
-            paddingLeft: 4,
-            paddingRight: 4,
-          }}
-        >
+        {/* ── Topbar ── */}
+        <header className="flex items-center h-15 shrink-0 px-1 mb-4">
+
           {/* Mobile hamburger */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setSidebarOpen(o => !o)}
-            className="lg:hidden size-8 mr-2 shrink-0"
-            style={{ color: '#7C8DB5' }}
+            className="lg:hidden size-8 mr-2 shrink-0 text-[#7C8DB5]"
           >
             <MenuIcon className="size-5" strokeWidth={1.5} />
           </Button>
 
           {/* Page title */}
-          <h2
-            style={{
-              fontSize: 20,
-              fontWeight: 700,
-              color: '#2E3A59',
-              fontFamily: 'Poppins, sans-serif',
-              flexShrink: 0,
-            }}
-          >
+          <h2 className="text-xl font-bold text-[#2E3A59] shrink-0">
             {currentTitle}
           </h2>
 
-          {/* Search circle button */}
-          <button
-            style={{
-              marginLeft: 12,
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              border: '1.5px solid #D5DCE8',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'transparent',
-              color: '#9BA8C2',
-              flexShrink: 0,
-              cursor: 'pointer',
-            }}
-          >
-            <SearchIcon style={{ width: 14, height: 14 }} strokeWidth={1.5} />
-          </button>
+         
 
-          {/* Spacer */}
-          <div style={{ flex: 1 }} />
+          <div className="flex-1" />
 
-          {/* Bell */}
-          <button
-            style={{
-              position: 'relative',
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'transparent',
-              border: 'none',
-              color: '#7C8DB5',
-              cursor: 'pointer',
-              marginRight: 4,
-            }}
-          >
-            <BellIcon style={{ width: 20, height: 20 }} strokeWidth={1.5} />
-            <span
-              style={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                backgroundColor: '#34C38F',
-              }}
-            />
-          </button>
+          
 
           {/* Avatar + name dropdown */}
-          <div style={{ position: 'relative' }}>
+          <div className="relative">
             <button
               onClick={() => setMenuOpen(o => !o)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '4px 8px 4px 4px',
-                borderRadius: 12,
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-              }}
+              className="flex items-center gap-2 py-1 pr-2 pl-1 rounded-xl bg-transparent border-none cursor-pointer"
             >
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #34C38F 0%, #26A69A 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  flexShrink: 0,
-                }}
-              >
+              <div className="size-9 rounded-full bg-linear-to-br from-[#34C38F] to-[#26A69A] flex items-center justify-center text-white text-xs font-bold shrink-0">
                 {initials}
               </div>
-              <span
-                className="hidden sm:block"
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: '#2E3A59',
-                  fontFamily: 'Poppins, sans-serif',
-                  whiteSpace: 'nowrap',
-                }}
-              >
+              <span className="hidden sm:block text-sm font-semibold text-[#2E3A59] whitespace-nowrap">
                 {user.name.split(' ')[0]}
               </span>
-              <ChevronDownIcon
-                className="hidden sm:block"
-                style={{ width: 14, height: 14, color: '#9BA8C2' }}
-                strokeWidth={2}
-              />
+              <ChevronDownIcon className="hidden sm:block size-3.5 text-[#9BA8C2]" strokeWidth={2} />
             </button>
 
             {menuOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                <div
-                  className="absolute right-0 z-50"
-                  style={{
-                    top: 'calc(100% + 8px)',
-                    width: 208,
-                    background: 'white',
-                    borderRadius: 16,
-                    boxShadow: '0 8px 32px rgba(46,58,89,0.12)',
-                    border: '1px solid #EEF1F8',
-                    paddingTop: 4,
-                    paddingBottom: 4,
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div style={{ padding: '10px 16px 10px', borderBottom: '1px solid #F0F3F8' }}>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: '#2E3A59' }}>{user.name}</p>
-                    <p style={{ fontSize: 11, color: '#9BA8C2', marginTop: 1 }}>{roleLabel[user.role]}</p>
+                <div className="absolute right-0 z-50 top-[calc(100%+8px)] w-52 bg-white rounded-2xl shadow-[0_8px_32px_rgba(46,58,89,0.12)] border border-[#EEF1F8] py-1 overflow-hidden">
+                  <div className="px-4 py-2.5 border-b border-[#F0F3F8]">
+                    <p className="text-sm font-semibold text-[#2E3A59]">{user.name}</p>
+                    <p className="text-[11px] text-[#9BA8C2] mt-px">{roleLabel[user.role]}</p>
                   </div>
                   {user.role === 'client' && (
                     <Link
                       to="/client/profile"
                       onClick={() => setMenuOpen(false)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 10,
-                        padding: '10px 16px',
-                        fontSize: 14,
-                        color: '#2E3A59',
-                        textDecoration: 'none',
-                      }}
-                      className="hover:bg-[#F5F6FA] transition-colors"
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#2E3A59] no-underline hover:bg-[#F5F6FA] transition-colors"
                     >
-                      <UserIcon style={{ width: 16, height: 16, color: '#9BA8C2' }} strokeWidth={1.5} />
+                      <UserIcon className="size-4 text-[#9BA8C2]" strokeWidth={1.5} />
                       Meu Perfil
                     </Link>
                   )}
                   <button
                     onClick={handleLogout}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      padding: '10px 16px',
-                      width: '100%',
-                      fontSize: 14,
-                      color: '#EF4444',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                    }}
-                    className="hover:bg-red-50 transition-colors"
+                    className="flex items-center gap-2.5 px-4 py-2.5 w-full text-sm text-red-500 bg-transparent border-none cursor-pointer text-left hover:bg-red-50 transition-colors"
                   >
-                    <LogOutIcon style={{ width: 16, height: 16 }} strokeWidth={1.5} />
+                    <LogOutIcon className="size-4" strokeWidth={1.5} />
                     Sair
                   </button>
                 </div>
@@ -349,14 +177,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* ── Page content ── */}
-        <main
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            paddingRight: 4,
-            paddingBottom: 4,
-          }}
-        >
+        <main className="flex-1 overflow-y-auto pr-1 pb-1">
           {children}
         </main>
       </div>
@@ -378,33 +199,16 @@ function SidebarContent({
 }) {
   return (
     <>
-      {/* Logo — centered */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          paddingTop: 28,
-          paddingBottom: 20,
-          flexShrink: 0,
-        }}
-      >
-        
-          <img
-            src="https://prosperar.med.br/images/logo.png"
-            alt="P"
-
-          />
-         
-        
-       
+      {/* Logo */}
+      <div className="flex flex-col items-center pt-7 pb-5 shrink-0">
+        <img src="https://prosperar.med.br/images/logo.png" alt="P" />
       </div>
 
       {/* Divider */}
-      <div style={{ height: 1, backgroundColor: '#F0F3F8', marginBottom: 8, flexShrink: 0 }} />
+      <div className="h-px bg-[#F0F3F8] mb-2 shrink-0" />
 
       {/* Nav */}
-      <nav style={{ flex: 1, overflowY: 'auto', paddingTop: 8, paddingBottom: 8 }}>
+      <nav className="flex-1 overflow-y-auto py-2">
         {nav.map(item => {
           const active =
             location.pathname === item.to ||
@@ -414,25 +218,14 @@ function SidebarContent({
               key={item.to}
               to={item.to}
               onClick={onNavClick}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                paddingTop: 10,
-                paddingBottom: 10,
-                paddingLeft: 20,
-                paddingRight: 16,
-                fontSize: 13,
-                fontWeight: 500,
-                textDecoration: 'none',
-                borderLeft: active ? '3px solid #34C38F' : '3px solid transparent',
-                color: active ? '#34C38F' : '#9BA8C2',
-                transition: 'all 0.15s',
-                fontFamily: 'Poppins, sans-serif',
-              }}
-              className={!active ? 'hover:text-[#2E3A59]' : ''}
+              className={cn(
+                'flex items-center gap-3 py-2.5 pl-5 pr-4 text-[13px] font-medium no-underline border-l-[3px] transition-all duration-150',
+                active
+                  ? 'border-[#34C38F] text-[#34C38F]'
+                  : 'border-transparent text-[#9BA8C2] hover:text-[#2E3A59]',
+              )}
             >
-              <span style={{ color: active ? '#34C38F' : '#9BA8C2', flexShrink: 0 }}>
+              <span className={cn('shrink-0', active ? 'text-[#34C38F]' : 'text-[#9BA8C2]')}>
                 {item.icon}
               </span>
               {item.label}
@@ -442,68 +235,12 @@ function SidebarContent({
       </nav>
 
       {/* Bottom — user card + logout */}
-      <div style={{ flexShrink: 0, padding: '12px 16px 20px' }}>
-        {/* Upgrade-style card */}
-        <div
-          style={{
-            borderRadius: 16,
-            background: 'linear-gradient(145deg, #EAF7F2, #DFF2EC)',
-            padding: '14px 12px',
-            marginBottom: 12,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            textAlign: 'center',
-          }}
-        >
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #34C38F 0%, #26A69A 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: 13,
-              fontWeight: 700,
-              marginBottom: 8,
-            }}
-          >
-            {initials}
-          </div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: '#2E3A59', fontFamily: 'Poppins, sans-serif' }}>
-            {user.name.split(' ')[0]}
-          </p>
-          <p style={{ fontSize: 10, color: '#7C8DB5', marginTop: 2 }}>
-            {roleLabel[user.role]}
-          </p>
-        </div>
-
-        {/* Logout button — styled like "Upgrade Now" */}
-        <button
-          onClick={onLogout}
-          style={{
-            width: '100%',
-            padding: '10px 0',
-            borderRadius: 12,
-            background: 'linear-gradient(135deg, #34C38F 0%, #26A69A 100%)',
-            color: 'white',
-            fontSize: 13,
-            fontWeight: 600,
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            fontFamily: 'Poppins, sans-serif',
-          }}
-        >
-          <LogOutIcon style={{ width: 15, height: 15 }} strokeWidth={2} />
+      <div className="shrink-0 px-4 pt-3 pb-5">
+        
+        <Button onClick={onLogout} className="w-full gap-2 text-xs">
+          <LogOutIcon className="size-4" strokeWidth={2} />
           Sair da conta
-        </button>
+        </Button>
       </div>
     </>
   )

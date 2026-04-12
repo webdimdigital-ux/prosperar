@@ -15,33 +15,17 @@ const FEATURES = [
 
 function LeftPanel() {
   return (
-    <div
-      className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 text-white relative overflow-hidden"
-      style={{ background: 'linear-gradient(145deg, #2E3A59 0%, #1a2d45 100%)' }}
-    >
-      <div
-        className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full opacity-10"
-        style={{ background: '#34C38F' }}
-      />
-      <div
-        className="absolute -bottom-24 -left-24 w-[380px] h-[380px] rounded-full opacity-10"
-        style={{ background: '#34C38F' }}
-      />
+    <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 text-white relative overflow-hidden bg-[linear-gradient(145deg,#2E3A59_0%,#1a2d45_100%)]">
+      <div className="absolute -top-32 -right-32 w-125 h-125 rounded-full opacity-10 bg-[#34C38F]" />
+      <div className="absolute -bottom-24 -left-24 w-95 h-95 rounded-full opacity-10 bg-[#34C38F]" />
 
-      {/* Logo */}
-      <div className="relative z-10">
-        
-      </div>
+      <div className="relative z-10" />
 
-      {/* Main copy */}
       <div className="relative z-10 space-y-8">
         <div>
-          <h1
-            className="text-4xl font-bold leading-tight mb-4"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-          >
+          <h1 className="text-4xl font-bold leading-tight mb-4">
             Seus exames,<br />
-            <span style={{ color: '#34C38F' }}>na palma da mão.</span>
+            <span className="text-[#34C38F]">na palma da mão.</span>
           </h1>
           <p className="text-base opacity-70 leading-relaxed max-w-sm">
             Acesse resultados, faça download de laudos de seus exames de forma simples e segura.
@@ -51,7 +35,7 @@ function LeftPanel() {
         <ul className="space-y-3">
           {FEATURES.map(f => (
             <li key={f} className="flex items-start gap-3 text-sm opacity-80">
-              <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" style={{ color: '#34C38F' }} />
+              <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-[#34C38F]" />
               {f}
             </li>
           ))}
@@ -78,29 +62,19 @@ export function ForgotPasswordPage() {
     return (
       <div className="min-h-screen flex">
         <LeftPanel />
-        <div className="flex-1 flex items-center justify-center p-8" style={{ background: '#F5F6FA' }}>
+        <div className="flex-1 flex items-center justify-center p-8 bg-[#F5F6FA]">
           <div className="w-full max-w-105">
-            <div className="bg-white rounded-xs p-8 text-center" style={{ boxShadow: '0 2px 8px rgba(46,58,89,0.06)' }}>
-              <div
-                className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
-                style={{ background: '#EBF5FC' }}
-              >
-                <MailCheck className="w-7 h-7" style={{ color: '#34C38F' }} />
+            <div className="bg-white rounded-2xl p-8 text-center shadow-[0_2px_8px_rgba(46,58,89,0.06)]">
+              <div className="size-14 rounded-full flex items-center justify-center mx-auto mb-4 bg-[#EBF5FC]">
+                <MailCheck className="size-7 text-[#34C38F]" />
               </div>
-              <h2
-                className="text-2xl font-bold mb-2"
-                style={{ color: '#2E3A59', fontFamily: 'Poppins, sans-serif' }}
-              >
+              <h2 className="text-2xl font-bold mb-2 text-[#2E3A59]">
                 E-mail enviado!
               </h2>
-              <p className="text-sm mb-6" style={{ color: '#7C8DB5' }}>
+              <p className="text-sm mb-6 text-[#7C8DB5]">
                 Verifique sua caixa de entrada para o link de redefinição de senha.
               </p>
-              <Link
-                to="/login"
-                className="text-sm font-semibold hover:underline"
-                style={{ color: '#34C38F' }}
-              >
+              <Link to="/login" className="text-sm font-semibold hover:underline text-[#34C38F]">
                 Voltar para o login
               </Link>
             </div>
@@ -114,10 +88,8 @@ export function ForgotPasswordPage() {
     <div className="min-h-screen flex">
       <LeftPanel />
 
-      {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-8" style={{ background: '#F5F6FA' }}>
+      <div className="flex-1 flex items-center justify-center p-8 bg-[#F5F6FA]">
         <div className="w-full max-w-105">
-          {/* Mobile logo */}
           <div className="flex justify-center mb-8 lg:hidden">
             <img
               src="https://prosperar.med.br/images/logo.png"
@@ -126,20 +98,17 @@ export function ForgotPasswordPage() {
             />
           </div>
 
-          <div className="bg-white rounded-xs p-8" style={{ boxShadow: '0 2px 8px rgba(46,58,89,0.06)' }}>
-            <h2
-              className="text-2xl font-bold mb-1"
-              style={{ color: '#2E3A59', fontFamily: 'Poppins, sans-serif' }}
-            >
+          <div className="bg-white rounded-2xl p-8 shadow-[0_2px_8px_rgba(46,58,89,0.06)]">
+            <h2 className="text-2xl font-bold mb-1 text-[#2E3A59]">
               Redefinir senha
             </h2>
-            <p className="text-sm mb-6" style={{ color: '#7C8DB5' }}>
+            <p className="text-sm mb-6 text-[#7C8DB5]">
               Informe seu e-mail e enviaremos um link para redefinir sua senha.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" style={{ color: '#2E3A59' }}>E-mail</Label>
+                <Label htmlFor="email" className="text-[#2E3A59]">E-mail</Label>
                 <Input
                   id="email"
                   type="email"
@@ -150,19 +119,14 @@ export function ForgotPasswordPage() {
                 />
               </div>
 
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full mt-2 font-semibold"
-                style={{ background: '#34C38F', color: '#fff', border: 'none' }}
-              >
+              <Button type="submit" disabled={loading} className="w-full mt-2">
                 {loading ? 'Enviando...' : 'Enviar link de recuperação'}
               </Button>
             </form>
 
-            <p className="mt-5 text-center text-sm" style={{ color: '#7C8DB5' }}>
+            <p className="mt-5 text-center text-sm text-[#7C8DB5]">
               Lembrou a senha?{' '}
-              <Link to="/login" className="font-semibold hover:underline" style={{ color: '#34C38F' }}>
+              <Link to="/login" className="font-semibold hover:underline text-[#34C38F]">
                 Voltar para o login
               </Link>
             </p>

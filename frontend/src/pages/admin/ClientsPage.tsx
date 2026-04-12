@@ -20,7 +20,7 @@ const ALL = '__all__'
 export function AdminClientsPage() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const [perPage, setPerPage] = useState(15)
+  const [perPage, setPerPage] = useState(10)
   const [filter, setFilter] = useState<Record<string, string>>({})
   const [sortColumn, setSortColumn] = useState('name')
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC')
@@ -89,9 +89,9 @@ export function AdminClientsPage() {
   const { fields, errors, editId, isOpen } = store
 
   return (
-    <div className="space-y-4 mt-8">
+    <div className="space-y-4 ">
       <div className="flex items-center justify-end">
-        <Button className='rounded-sm' onClick={() => store.open()}>Adicionar paciente</Button>
+        <Button onClick={() => store.open()}>Adicionar paciente</Button>
       </div>
 
       <Dialog open={isOpen} onOpenChange={open => !open && store.close()}>

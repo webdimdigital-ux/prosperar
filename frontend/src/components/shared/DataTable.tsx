@@ -21,18 +21,11 @@ interface Props<T> {
   sortOrder?: 'ASC' | 'DESC'
   onSort?: (column: string) => void
   emptyMessage?: string
-  /** Filter/search bar rendered above the table, inside the card */
   toolbar?: ReactNode
-  /** Pagination rendered below the table, inside the card */
   pagination?: ReactNode
 }
 
-const CARD_STYLE: React.CSSProperties = {
-  background: 'white',
-  borderRadius: 20,
-  boxShadow: '0 4px 24px rgba(46,58,89,0.08)',
-  overflow: 'hidden',
-}
+const CARD = 'bg-white rounded-[20px] shadow-[0_4px_24px_rgba(46,58,89,0.08)] overflow-hidden'
 
 export function DataTable<T extends { id: string | number }>({
   columns, data, loading, sortColumn, sortOrder, onSort,
@@ -42,9 +35,9 @@ export function DataTable<T extends { id: string | number }>({
 
   if (loading) {
     return (
-      <div style={CARD_STYLE}>
+      <div className={CARD}>
         {toolbar && (
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #F0F3F8' }}>
+          <div className="px-5 py-4 border-b border-[#F0F3F8]">
             {toolbar}
           </div>
         )}
@@ -52,12 +45,7 @@ export function DataTable<T extends { id: string | number }>({
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="animate-pulse"
-              style={{
-                height: 52,
-                borderBottom: '1px solid #F5F7FB',
-                backgroundColor: i % 2 === 0 ? '#FAFBFD' : 'white',
-              }}
+              className={cn('animate-pulse h-13 border-b border-[#F5F7FB]', i % 2 === 0 ? 'bg-[#FAFBFD]' : 'bg-white')}
             />
           ))}
         </div>
@@ -66,10 +54,10 @@ export function DataTable<T extends { id: string | number }>({
   }
 
   return (
-    <div style={CARD_STYLE}>
-      {/* Toolbar (filters / search) */}
+    <div className={CARD}>
+      {/* Toolbar */}
       {toolbar && (
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #F0F3F8' }}>
+        <div className="px-5 py-4 border-b border-[#F0F3F8]">
           {toolbar}
         </div>
       )}
@@ -77,27 +65,16 @@ export function DataTable<T extends { id: string | number }>({
       {/* Table */}
       <Table>
         <TableHeader>
-          <TableRow
-            className="hover:bg-transparent"
-            style={{ borderBottom: '1px solid #F0F3F8', backgroundColor: '#FAFBFD' }}
-          >
+          <TableRow className="hover:bg-transparent border-b border-[#F0F3F8] bg-[#FAFBFD]">
             {columns.map(col => (
               <TableHead
                 key={col.key}
                 onClick={() => col.sortable && onSort?.(col.key)}
                 className={cn(
                   col.compact ? 'px-3' : 'px-5',
-                  'py-3.5 h-auto',
+                  'py-3.5 h-auto text-[11px] font-semibold uppercase tracking-[0.6px] text-[#9BA8C2]',
                   col.sortable && 'cursor-pointer select-none',
                 )}
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.6px',
-                  color: '#9BA8C2',
-                  fontFamily: 'Poppins, sans-serif',
-                }}
               >
                 <span className="flex items-center gap-1">
                   {col.label}
@@ -119,7 +96,7 @@ export function DataTable<T extends { id: string | number }>({
             <TableRow>
               <TableCell
                 colSpan={columns.length}
-                style={{ padding: '48px 20px', textAlign: 'center', color: '#9BA8C2', fontSize: 14 }}
+                className="py-12 px-5 text-center text-sm text-[#9BA8C2]"
               >
                 {emptyMessage}
               </TableCell>
@@ -128,18 +105,18 @@ export function DataTable<T extends { id: string | number }>({
             data.map((row, idx) => (
               <TableRow
                 key={row.id}
-                style={{
-                  borderBottom: idx === data.length - 1 && !pagination ? 'none' : '1px solid #F5F7FB',
-                }}
-                className="transition-colors"
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#FAFBFD')}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                className={cn(
+                  'transition-colors hover:bg-[#FAFBFD]',
+                  idx === data.length - 1 && !pagination ? 'border-none' : 'border-b border-[#F5F7FB]',
+                )}
               >
                 {columns.map(col => (
                   <TableCell
                     key={col.key}
-                    className={col.compact ? 'px-3 py-2.5' : 'px-5 py-3.5'}
-                    style={{ fontSize: 13, color: '#2E3A59', fontFamily: 'Poppins, sans-serif' }}
+                    className={cn(
+                      col.compact ? 'px-3 py-2.5' : 'px-5 py-3.5',
+                      'text-[13px] text-[#2E3A59]',
+                    )}
                   >
                     {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '')}
                   </TableCell>
@@ -152,7 +129,7 @@ export function DataTable<T extends { id: string | number }>({
 
       {/* Pagination */}
       {pagination && (
-        <div style={{ borderTop: '1px solid #F0F3F8', padding: '8px 16px' }}>
+        <div className="border-t border-[#F0F3F8] px-4 py-2">
           {pagination}
         </div>
       )}

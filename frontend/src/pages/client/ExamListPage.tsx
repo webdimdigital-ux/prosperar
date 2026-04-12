@@ -26,12 +26,7 @@ type ExamRow = {
   hospital: { name: string }
 }
 
-const CARD: React.CSSProperties = {
-  background: 'white',
-  borderRadius: 20,
-  boxShadow: '0 4px 24px rgba(46,58,89,0.08)',
-  padding: '28px 28px',
-}
+const CARD = 'bg-white rounded-[20px] shadow-[0_4px_24px_rgba(46,58,89,0.08)]'
 
 export function ClientExamListPage() {
   const {
@@ -57,10 +52,10 @@ export function ClientExamListPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
 
       {/* ── Toolbar card ── */}
-      <div style={CARD}>
+      <div className={`${CARD} p-7`}>
         <div className="flex flex-wrap gap-3 items-center">
           <div className="flex-1 min-w-48">
             <SearchBar value={search} onChange={setSearch} placeholder="Buscar por nome ou unidade..." />
@@ -80,53 +75,44 @@ export function ClientExamListPage() {
 
       {/* ── Exam cards ── */}
       {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} style={{ ...CARD, padding: '20px 24px' }}>
-              <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                <div className="animate-pulse" style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: '#F0F3F8', flexShrink: 0 }} />
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div className="animate-pulse" style={{ height: 14, backgroundColor: '#F0F3F8', borderRadius: 8, width: '55%' }} />
-                  <div className="animate-pulse" style={{ height: 12, backgroundColor: '#F0F3F8', borderRadius: 8, width: '35%' }} />
+            <div key={i} className={`${CARD} p-5`}>
+              <div className="flex gap-4 items-center">
+                <div className="animate-pulse size-12 rounded-full bg-[#F0F3F8] shrink-0" />
+                <div className="flex-1 flex flex-col gap-2">
+                  <div className="animate-pulse h-3.5 bg-[#F0F3F8] rounded-lg w-[55%]" />
+                  <div className="animate-pulse h-3 bg-[#F0F3F8] rounded-lg w-[35%]" />
                 </div>
               </div>
             </div>
           ))}
         </div>
       ) : data.length === 0 ? (
-        <div style={{ ...CARD, padding: '48px 24px', textAlign: 'center', color: '#9BA8C2', fontSize: 14 }}>
+        <div className={`${CARD} py-12 px-6 text-center text-sm text-[#9BA8C2]`}>
           Nenhum exame encontrado.
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {(data as ExamRow[]).map(exam => (
-            <div key={exam.id} style={CARD}>
-              <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+            <div key={exam.id} className={`${CARD} p-7`}>
+              <div className="flex gap-5 items-start">
 
                 {/* Icon circle */}
-                <div style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #34C38F 0%, #26A69A 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}>
-                  <FileTextIcon style={{ width: 26, height: 26, color: 'white' }} strokeWidth={1.5} />
+                <div className="size-14 rounded-full bg-linear-to-br from-[#34C38F] to-[#26A69A] flex items-center justify-center shrink-0">
+                  <FileTextIcon className="size-6.5 text-white" strokeWidth={1.5} />
                 </div>
 
                 {/* Content */}
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="flex-1 min-w-0">
 
                   {/* Title row */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
+                  <div className="flex justify-between items-start gap-3 mb-3">
                     <div>
-                      <p style={{ fontWeight: 600, fontSize: 16, color: '#2E3A59', fontFamily: 'Poppins, sans-serif', lineHeight: 1.4 }}>
+                      <p className="font-semibold text-base text-[#2E3A59] leading-snug">
                         {exam.name}
                       </p>
-                      <p style={{ fontSize: 12, color: '#9BA8C2', marginTop: 4 }}>
+                      <p className="text-xs text-[#9BA8C2] mt-1">
                         Exame #{exam.id}
                       </p>
                     </div>
@@ -134,31 +120,26 @@ export function ClientExamListPage() {
                   </div>
 
                   {/* Meta chips */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 24px', marginBottom: 20 }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: '#7C8DB5' }}>
-                      <CalendarIcon style={{ width: 14, height: 14 }} strokeWidth={1.5} />
+                  <div className="flex flex-wrap gap-x-6 gap-y-2 mb-5">
+                    <span className="flex items-center gap-1.25 text-[13px] text-[#7C8DB5]">
+                      <CalendarIcon className="size-3.5" strokeWidth={1.5} />
                       {formatDate(exam.exam_date)}
                     </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: '#7C8DB5' }}>
-                      <BuildingIcon style={{ width: 14, height: 14 }} strokeWidth={1.5} />
+                    <span className="flex items-center gap-1.25 text-[13px] text-[#7C8DB5]">
+                      <BuildingIcon className="size-3.5" strokeWidth={1.5} />
                       {exam.hospital?.name ?? '—'}
                     </span>
                     {exam.technician && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: '#7C8DB5' }}>
-                        <UserIcon style={{ width: 14, height: 14 }} strokeWidth={1.5} />
+                      <span className="flex items-center gap-1.25 text-[13px] text-[#7C8DB5]">
+                        <UserIcon className="size-3.5" strokeWidth={1.5} />
                         {exam.technician}
                       </span>
                     )}
                   </div>
 
                   {/* Actions */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, paddingTop: 16, borderTop: '1px solid #F0F3F8' }}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleView(exam)}
-                      style={{ borderRadius: 10, fontSize: 13 }}
-                    >
+                  <div className="flex justify-end gap-2 pt-4 border-t border-[#F0F3F8]">
+                    <Button variant="outline" size="sm" onClick={() => handleView(exam)}>
                       <EyeIcon className="size-4" />
                       Visualizar
                     </Button>
@@ -166,13 +147,6 @@ export function ClientExamListPage() {
                       size="sm"
                       onClick={() => download(exam.id, `${exam.name}.pdf`)}
                       disabled={downloading === exam.id}
-                      style={{
-                        borderRadius: 10,
-                        fontSize: 13,
-                        background: 'linear-gradient(135deg, #34C38F 0%, #26A69A 100%)',
-                        border: 'none',
-                        color: 'white',
-                      }}
                     >
                       {downloading === exam.id
                         ? <LoaderCircleIcon className="size-4 animate-spin" />
@@ -189,7 +163,7 @@ export function ClientExamListPage() {
 
       {/* ── Pagination ── */}
       {paginatorInfo && paginatorInfo.total > 0 && (
-        <div style={{ ...CARD, padding: '4px 16px' }}>
+        <div className={`${CARD} px-4 py-1`}>
           <Pagination
             currentPage={page}
             lastPage={paginatorInfo.lastPage ?? 1}

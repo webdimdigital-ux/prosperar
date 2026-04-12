@@ -19,7 +19,7 @@ const ALL = '__all__'
 export function AdminHospitalsPage() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const [perPage, setPerPage] = useState(15)
+  const [perPage, setPerPage] = useState(10)
   const [filter, setFilter] = useState<Record<string, string>>({})
   const [sortColumn, setSortColumn] = useState('name')
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC')
@@ -95,8 +95,7 @@ export function AdminHospitalsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Unidades</h1>
+      <div className="flex items-center justify-end">
         <Button onClick={() => store.open()}>Adicionar unidade</Button>
       </div>
 

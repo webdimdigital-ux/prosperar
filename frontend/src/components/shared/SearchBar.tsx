@@ -18,7 +18,7 @@ export function SearchBar({ value, onChange, placeholder = 'Buscar...' }: Props)
 
   return (
     <div className="relative">
-      <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 pointer-events-none z-10" style={{ color: '#B0BBCF' }} />
+      <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 pointer-events-none z-10 text-[#B0BBCF]" />
       <Input
         type="text"
         value={local}

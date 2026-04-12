@@ -20,8 +20,6 @@ function getPageNumbers(current: number, last: number): (number | '...')[] {
 
 export function Pagination({ currentPage, lastPage, total, perPage, onPageChange, onPerPageChange }: Props) {
   const pages = getPageNumbers(currentPage, lastPage)
-  const from = Math.min((currentPage - 1) * perPage + 1, total)
-  const to = Math.min(currentPage * perPage, total)
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 px-1 py-3">
@@ -37,7 +35,7 @@ export function Pagination({ currentPage, lastPage, total, perPage, onPageChange
             ))}
           </SelectContent>
         </Select>
-        <span>de {total} registros ({from}–{to})</span>
+        <span>de {total}</span>
       </div>
 
       <div className="flex items-center gap-1">
