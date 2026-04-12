@@ -1,7 +1,7 @@
 import { useExamList } from '@/hooks/useExamList'
 import { Pagination } from '@/components/shared/Pagination'
-import { SearchBar } from '@/components/shared/SearchBar'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { FilterToolbar } from '@/components/shared/FilterToolbar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/date-picker'
 import { Button } from '@/components/ui/button'
@@ -55,22 +55,24 @@ export function ClientExamListPage() {
     <div className="flex flex-col gap-4">
 
       {/* ── Toolbar card ── */}
-      <div className={`${CARD} p-7`}>
-        <div className="flex flex-wrap gap-3 items-center">
-          <div className="flex-1 min-w-48">
-            <SearchBar value={search} onChange={setSearch} placeholder="Buscar por nome ou unidade..." />
-          </div>
+      <div className={`${CARD} p-5`}>
+        <FilterToolbar
+          search={search}
+          onSearch={setSearch}
+          placeholder="Buscar por nome ou unidade..."
+          filterCount={[filter.status, filter.date_from, filter.date_to].filter(Boolean).length}
+        >
           <Select value={filter.status || ALL} onValueChange={v => setFilter(v === ALL ? {} : { status: v })}>
-            <SelectTrigger className="w-44"><SelectValue placeholder="Todos os status" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-44"><SelectValue placeholder="Todos os status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>Todos os status</SelectItem>
               <SelectItem value="available">Disponível</SelectItem>
               <SelectItem value="delivered">Entregue</SelectItem>
             </SelectContent>
           </Select>
-          <DatePicker value={filter.date_from ?? ''} onChange={v => setFilter({ ...filter, date_from: v })} placeholder="De" className="w-36" />
-          <DatePicker value={filter.date_to ?? ''} onChange={v => setFilter({ ...filter, date_to: v })} placeholder="Até" className="w-36" />
-        </div>
+          <DatePicker value={filter.date_from ?? ''} onChange={v => setFilter({ ...filter, date_from: v })} placeholder="De" className="w-full sm:w-36" />
+          <DatePicker value={filter.date_to ?? ''} onChange={v => setFilter({ ...filter, date_to: v })} placeholder="Até" className="w-full sm:w-36" />
+        </FilterToolbar>
       </div>
 
       {/* ── Exam cards ── */}

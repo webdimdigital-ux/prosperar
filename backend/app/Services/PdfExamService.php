@@ -15,6 +15,7 @@ class PdfExamService
     // aparecem ANTES dos seus labels no texto extraído do PDF.
     private const PATTERNS = [
         'id'         => '#ID:\s*(\S+)#i',
+        'cpf'        => '#(\d{3}[.]\d{3}[.]\d{3}[-./]\d{2})#',
         'medico'     => '#(Dr\.\s+[^\n]+)#iu',
         'crm'        => '#(CRM-\w+\s*:\s*\d+)#iu',
         'nome'       => '#^(.+)\n\d{2}/\d{2}/\d{4}\n#mu',
@@ -48,11 +49,12 @@ class PdfExamService
                 $fields = $this->extractAll($text);
 
                 $patientId = $fields['id'];
+                $cpf = $fields['cpf'];
                 $splitPath = $this->extractPage($file->getRealPath(), $pageNum, $hospitalId, $patientId ?? 'unknown');
 
                 $clientId = null;
-                if ($patientId) {
-                    $user = User::where('cpf', $patientId)->first();
+                if ($cpf) {
+                    $user = User::where('cpf', $cpf)->first();
                     $clientId = $user?->id;
                 }
 
@@ -62,8 +64,9 @@ class PdfExamService
                     'client_id'   => $clientId,
                     'hospital_id' => $hospitalId,
                     'uploaded_by' => $uploadedBy,
-                    'cpf'         => $patientId ?? '',
-                    'name'        => $fields['nome'] ?? ($patientId ? "Paciente {$patientId}" : "Página {$pageNum}"),
+                    'cpf'         => $cpf ?? '',
+                    'patient_id'  => $patientId,
+                    'name'        => $fields['nome'] ?? ($cpf ? "Paciente {$cpf}" : "Página {$pageNum}"),
                     'exam_date'   => $examDate,
                     'file_path'   => $splitPath,
                     'observations'=> $observations,
@@ -83,8 +86,8 @@ class PdfExamService
                 $exams[] = $exam;
                 $processed++;
 
-                if (! $patientId) {
-                    $errors[] = ['page' => $pageNum, 'reason' => 'Patient ID not found in page content'];
+                if (! $cpf) {
+                    $errors[] = ['page' => $pageNum, 'reason' => 'CPF not found in page content'];
                 }
             } catch (\Throwable $e) {
                 $failed++;

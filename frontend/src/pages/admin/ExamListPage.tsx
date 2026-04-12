@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useExamList } from '@/hooks/useExamList'
 import { DataTable } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
-import { SearchBar } from '@/components/shared/SearchBar'
+import { FilterToolbar } from '@/components/shared/FilterToolbar'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ExamActionsMenu } from '@/components/shared/ExamActionsMenu'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -121,27 +121,29 @@ export function AdminExamListPage() {
         sortOrder={sortOrder}
         onSort={handleSort}
         toolbar={
-          <div className="flex flex-wrap gap-3 items-center">
-            <div className="flex-1 min-w-48">
-              <SearchBar value={search} onChange={setSearch} placeholder="Buscar paciente, exame ou unidade..." />
-            </div>
+          <FilterToolbar
+            search={search}
+            onSearch={setSearch}
+            placeholder="Buscar paciente, exame ou unidade..."
+            filterCount={[filter.status, filter.hospital_id, filter.date_from, filter.date_to].filter(Boolean).length}
+          >
             <Select value={filter.status || ALL} onValueChange={v => setFilter({ ...filter, status: v === ALL ? '' : v })}>
-              <SelectTrigger className="w-44"><SelectValue placeholder="Todos os status" /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-44"><SelectValue placeholder="Todos os status" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value={ALL}>Todos os status</SelectItem>
                 {statusOptions.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={filter.hospital_id || ALL} onValueChange={v => setFilter({ ...filter, hospital_id: v === ALL ? '' : v })}>
-              <SelectTrigger className="w-44"><SelectValue placeholder="Todas as unidades" /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-44"><SelectValue placeholder="Todas as unidades" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value={ALL}>Todas as unidades</SelectItem>
                 {hospitals.map((h: { id: string; name: string }) => <SelectItem key={h.id} value={h.id}>{h.name}</SelectItem>)}
               </SelectContent>
             </Select>
-            <DatePicker value={filter.date_from ?? ''} onChange={v => setFilter({ ...filter, date_from: v })} placeholder="Data início" className="w-40" />
-            <DatePicker value={filter.date_to ?? ''} onChange={v => setFilter({ ...filter, date_to: v })} placeholder="Data fim" className="w-40" />
-          </div>
+            <DatePicker value={filter.date_from ?? ''} onChange={v => setFilter({ ...filter, date_from: v })} placeholder="Data início" className="w-full sm:w-40" />
+            <DatePicker value={filter.date_to ?? ''} onChange={v => setFilter({ ...filter, date_to: v })} placeholder="Data fim" className="w-full sm:w-40" />
+          </FilterToolbar>
         }
         pagination={
           <Pagination currentPage={page} lastPage={paginatorInfo?.lastPage ?? 1}

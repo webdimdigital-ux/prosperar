@@ -9,7 +9,7 @@ class Exam extends Model
 {
     protected $fillable = [
         'client_id', 'hospital_id', 'uploaded_by',
-        'cpf', 'name', 'exam_date', 'file_path',
+        'cpf', 'patient_id', 'name', 'exam_date', 'file_path',
         'observations', 'status',
         'technician', 'sex', 'birth_date', 'height', 'weight', 'age', 'smoking', 'diagnosis', 'medico', 'crm',
     ];

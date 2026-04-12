@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client/react'
 import { GET_CLIENTS } from '@/graphql/queries/clients'
 import { DataTable } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
-import { SearchBar } from '@/components/shared/SearchBar'
+import { FilterToolbar } from '@/components/shared/FilterToolbar'
 
 export function HospitalClientListPage() {
   const [search, setSearch] = useState('')
@@ -42,9 +42,11 @@ export function HospitalClientListPage() {
         sortOrder={sortOrder}
         onSort={handleSort}
         toolbar={
-          <div className="flex-1 min-w-48">
-            <SearchBar value={search} onChange={v => { setSearch(v); setPage(1) }} placeholder="Buscar por nome ou ID do paciente..." />
-          </div>
+          <FilterToolbar
+            search={search}
+            onSearch={v => { setSearch(v); setPage(1) }}
+            placeholder="Buscar por nome ou ID do paciente..."
+          />
         }
         pagination={
           <Pagination currentPage={page} lastPage={paginatorInfo?.lastPage ?? 1}

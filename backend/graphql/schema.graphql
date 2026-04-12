@@ -107,6 +107,7 @@ type Hospital {
 type Exam {
     id: ID!
     cpf: String!
+    patient_id: String
     name: String!
     exam_date: String!
     file_path: String!

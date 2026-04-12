@@ -22,8 +22,8 @@ export function Pagination({ currentPage, lastPage, total, perPage, onPageChange
   const pages = getPageNumbers(currentPage, lastPage)
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 px-1 py-3">
-      <div className="flex items-center gap-2 text-sm text-[#7C8DB5]">
+    <div className="flex flex-col sm:flex-row flex-wrap items-center justify-between gap-3 px-1 py-3">
+      <div className="hidden sm:flex items-center gap-2 text-sm text-[#7C8DB5]">
         <span>Mostrando</span>
         <Select value={String(perPage)} onValueChange={v => onPerPageChange(Number(v))}>
           <SelectTrigger size="sm" className="w-20 h-8">
@@ -38,7 +38,7 @@ export function Pagination({ currentPage, lastPage, total, perPage, onPageChange
         <span>de {total}</span>
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 mx-auto sm:mx-0">
         <Button
           variant="outline"
           size="icon"

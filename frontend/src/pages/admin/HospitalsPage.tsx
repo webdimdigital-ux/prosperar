@@ -4,7 +4,7 @@ import { GET_HOSPITALS, CREATE_HOSPITAL, UPDATE_HOSPITAL } from '@/graphql/queri
 import { useHospitalFormStore } from '@/stores/hospitalFormStore'
 import { DataTable } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
-import { SearchBar } from '@/components/shared/SearchBar'
+import { FilterToolbar } from '@/components/shared/FilterToolbar'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -157,19 +157,21 @@ export function AdminHospitalsPage() {
         sortOrder={sortOrder}
         onSort={handleSort}
         toolbar={
-          <div className="flex flex-wrap gap-3 items-center">
-            <div className="flex-1 min-w-48">
-              <SearchBar value={search} onChange={v => { setSearch(v); setPage(1) }} placeholder="Buscar por nome ou CNPJ da unidade..." />
-            </div>
+          <FilterToolbar
+            search={search}
+            onSearch={v => { setSearch(v); setPage(1) }}
+            placeholder="Buscar por nome ou CNPJ da unidade..."
+            filterCount={filter.status ? 1 : 0}
+          >
             <Select value={filter.status || ALL} onValueChange={v => { setFilter(v === ALL ? {} : { status: v }); setPage(1) }}>
-              <SelectTrigger className="w-40"><SelectValue placeholder="Todos os status" /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Todos os status" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value={ALL}>Todos os status</SelectItem>
                 <SelectItem value="active">Ativo</SelectItem>
                 <SelectItem value="inactive">Inativo</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </FilterToolbar>
         }
         pagination={
           <Pagination currentPage={page} lastPage={paginatorInfo?.lastPage ?? 1}

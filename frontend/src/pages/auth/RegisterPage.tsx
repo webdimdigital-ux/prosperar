@@ -155,17 +155,16 @@ export function RegisterPage() {
                 <FieldError message={errors.email} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="cpf" className="text-[#2E3A59]">CPF</Label>
-                  <Input id="cpf" type="text" placeholder="000.000.000-00" value={form.cpf} onChange={set('cpf')} inputMode="numeric" />
-                  <FieldError message={errors.cpf} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="phone" className="text-[#2E3A59]">Telefone</Label>
-                  <Input id="phone" type="text" placeholder="(00) 000000000" value={form.phone} onChange={set('phone')} inputMode="numeric" />
-                  <FieldError message={errors.phone} />
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="cpf" className="text-[#2E3A59]">CPF</Label>
+                <Input id="cpf" type="text" placeholder="000.000.000-00" value={form.cpf} onChange={set('cpf')} inputMode="numeric" />
+                <FieldError message={errors.cpf} />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="phone" className="text-[#2E3A59]">Telefone</Label>
+                <Input id="phone" type="text" placeholder="(00) 000000000" value={form.phone} onChange={set('phone')} inputMode="numeric" />
+                <FieldError message={errors.phone} />
               </div>
 
               <div className="space-y-1.5">
@@ -181,17 +180,16 @@ export function RegisterPage() {
                 <FieldError message={errors.birth_date} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="password" className="text-[#2E3A59]">Senha</Label>
-                  <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={set('password')} />
-                  <FieldError message={errors.password} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="password_confirmation" className="text-[#2E3A59]">Confirmar senha</Label>
-                  <Input id="password_confirmation" type="password" placeholder="••••••••" value={form.password_confirmation} onChange={set('password_confirmation')} />
-                  <FieldError message={errors.password_confirmation} />
-                </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-[#2E3A59]">Senha</Label>
+                <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={set('password')} />
+                <FieldError message={errors.password} />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="password_confirmation" className="text-[#2E3A59]">Confirmar senha</Label>
+                <Input id="password_confirmation" type="password" placeholder="••••••••" value={form.password_confirmation} onChange={set('password_confirmation')} />
+                <FieldError message={errors.password_confirmation} />
               </div>
 
               <Button type="submit" disabled={loading} className="w-full mt-2">
