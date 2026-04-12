@@ -187,7 +187,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
 /* ─── Sidebar inner content (shared between desktop + mobile) ─── */
 function SidebarContent({
-  nav, user, location, initials, roleLabel, onNavClick, onLogout,
+  nav, location, onNavClick, onLogout,
 }: {
   nav: { label: string; to: string; icon: React.ReactNode }[]
   user: { name: string; role: string }
