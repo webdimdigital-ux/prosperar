@@ -4,7 +4,7 @@ export const LOGIN = gql`
   mutation Login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       token
-      user { id name email cpf role status }
+      user { id name email cpf phone birth_date role status }
     }
   }
 `
@@ -38,7 +38,7 @@ export const RESET_PASSWORD = gql`
 export const UPDATE_PROFILE = gql`
   mutation UpdateProfile($input: UpdateProfileInput!) {
     updateProfile(input: $input) {
-      id name email phone
+      id name email cpf phone birth_date
     }
   }
 `

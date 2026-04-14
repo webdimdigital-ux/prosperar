@@ -29,6 +29,7 @@ class UpdateProfileMutation
         $user->update(array_filter([
             'name' => $input['name'] ?? null,
             'phone' => $input['phone'] ?? null,
+            'birth_date' => $input['birth_date'] ?? null,
             'password' => ! empty($input['password']) ? $input['password'] : null,
         ], fn ($v) => $v !== null));
 

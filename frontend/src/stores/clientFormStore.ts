@@ -5,7 +5,10 @@ export interface ClientFormFields {
   email: string
   cpf: string
   phone: string
+  birth_date: string
+  birth_date_display: string
   password: string
+  password_confirmation: string
   status: string
 }
 
@@ -29,7 +32,10 @@ const empty: ClientFormFields = {
   email: '',
   cpf: '',
   phone: '',
+  birth_date: '',
+  birth_date_display: '',
   password: '',
+  password_confirmation: '',
   status: 'active',
 }
 
@@ -63,10 +69,21 @@ export const useClientFormStore = create<ClientFormStore>((set, get) => ({
     if (!fields.name.trim()) errs.name = 'Nome é obrigatório'
     if (!fields.email.trim()) errs.email = 'E-mail é obrigatório'
     else if (!isValidEmail(fields.email)) errs.email = 'E-mail inválido'
+
     if (!editId) {
       if (!fields.cpf.trim()) errs.cpf = 'ID do paciente é obrigatório'
       if (!fields.password.trim()) errs.password = 'Senha é obrigatória'
       else if (fields.password.length < 6) errs.password = 'Mínimo 6 caracteres'
+      if (!fields.password_confirmation.trim()) errs.password_confirmation = 'Confirme a senha'
+      else if (fields.password !== fields.password_confirmation) errs.password_confirmation = 'As senhas não coincidem'
+    } else {
+      if (fields.password && fields.password.length < 6) errs.password = 'Mínimo 6 caracteres'
+      if (fields.password && fields.password !== fields.password_confirmation) errs.password_confirmation = 'As senhas não coincidem'
+    }
+
+    if (fields.birth_date_display) {
+      const digits = fields.birth_date_display.replace(/\D/g, '')
+      if (digits.length === 8 && !fields.birth_date) errs.birth_date = 'Data inválida'
     }
 
     set({ errors: errs })

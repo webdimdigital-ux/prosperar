@@ -178,6 +178,7 @@ input ResetPasswordInput {
 input UpdateProfileInput {
     name: String
     phone: String
+    birth_date: String
     password: String
     password_confirmation: String
 }
@@ -204,6 +205,7 @@ input UpdateClientInput {
     name: String
     email: String
     phone: String
+    birth_date: String
     password: String
     status: UserStatus
 }
