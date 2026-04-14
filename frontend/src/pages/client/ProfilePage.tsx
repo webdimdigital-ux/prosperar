@@ -85,7 +85,9 @@ export function ProfilePage() {
         input.password = form.password
         input.password_confirmation = form.password_confirmation
       }
-      const { data } = await updateProfile({ variables: { input } })
+      const { data } = await updateProfile({ variables: { input } }) as {
+        data?: { updateProfile?: { name: string; phone: string | null; birth_date: string | null } }
+      }
       if (data?.updateProfile) {
         updateUser({
           name: data.updateProfile.name,
