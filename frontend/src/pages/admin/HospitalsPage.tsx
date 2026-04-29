@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
-import { GET_HOSPITALS, CREATE_HOSPITAL, UPDATE_HOSPITAL } from '@/graphql/queries/hospitals'
+import { GET_HOSPITALS, CREATE_HOSPITAL, UPDATE_HOSPITAL, DELETE_HOSPITAL } from '@/graphql/queries/hospitals'
 import { useHospitalFormStore } from '@/stores/hospitalFormStore'
 import { DataTable } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
@@ -12,7 +12,9 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { MoreHorizontalIcon, PencilIcon } from 'lucide-react'
+import { toast } from 'sonner'
+import { MoreHorizontalIcon, PencilIcon, Trash2Icon, LoaderCircleIcon } from 'lucide-react'
+import { friendlyError } from '@/lib/utils'
 
 const ALL = '__all__'
 
@@ -23,6 +25,7 @@ export function AdminHospitalsPage() {
   const [filter, setFilter] = useState<Record<string, string>>({})
   const [sortColumn, setSortColumn] = useState('name')
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC')
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const store = useHospitalFormStore()
 
@@ -34,6 +37,8 @@ export function AdminHospitalsPage() {
 
   const [createHospital, { loading: creating }] = useMutation(CREATE_HOSPITAL)
   const [updateHospital, { loading: updating }] = useMutation(UPDATE_HOSPITAL)
+  const [deleteHospital] = useMutation(DELETE_HOSPITAL)
+  const [bulkDeleting, setBulkDeleting] = useState(false)
 
   const hospitals = data?.hospitals?.data ?? []
   const paginatorInfo = data?.hospitals?.paginatorInfo
@@ -49,10 +54,43 @@ export function AdminHospitalsPage() {
     if (!store.validate()) return
     const { fields, editId } = store
     const input = { ...fields, status: fields.status as 'active' | 'inactive' }
-    if (editId) await updateHospital({ variables: { id: editId, input } })
-    else await createHospital({ variables: { input } })
-    store.close()
+    try {
+      if (editId) {
+        await updateHospital({ variables: { id: editId, input } })
+        toast.success('Unidade atualizada com sucesso!')
+      } else {
+        await createHospital({ variables: { input } })
+        toast.success('Unidade cadastrada com sucesso!')
+      }
+      store.close()
+      refetch()
+    } catch (err) {
+      toast.error(friendlyError(err))
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return
+    const count = selectedIds.size
+    setBulkDeleting(true)
+    let failed = 0
+    for (const id of selectedIds) {
+      try {
+        await deleteHospital({ variables: { id } })
+      } catch {
+        failed++
+      }
+    }
+    setBulkDeleting(false)
+    setSelectedIds(new Set())
     refetch()
+    const ok = count - failed
+    if (failed === 0)
+      toast.success(`${count} unidade${count > 1 ? 's removidas' : ' removida'} com sucesso!`)
+    else if (ok > 0)
+      toast.warning(`${ok} unidade${ok > 1 ? 's removidas' : ' removida'}, mas ${failed} não pôde ser removida.`)
+    else
+      toast.error('Não foi possível remover as unidades. Tente novamente.')
   }
 
   const textFields: [keyof typeof store.fields, string, string][] = [
@@ -85,6 +123,17 @@ export function AdminHospitalsPage() {
               <PencilIcon className="size-4 text-[#7C8DB5]" />
               Editar
             </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-600 focus:text-red-600 focus:bg-red-50"
+              onClick={() =>
+                deleteHospital({ variables: { id: r.id } })
+                  .then(() => { toast.success('Unidade removida com sucesso!'); refetch() })
+                  .catch(err => toast.error(friendlyError(err)))
+              }
+            >
+              <Trash2Icon className="size-4" />
+              Remover
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -98,6 +147,36 @@ export function AdminHospitalsPage() {
       <div className="flex items-center justify-end">
         <Button onClick={() => store.open()}>Adicionar unidade</Button>
       </div>
+
+      {/* Bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-[16px] shadow-[0_2px_8px_rgba(46,58,89,0.06)] border border-[#E8ECF4]">
+          <span className="text-sm font-medium text-[#2E3A59]">
+            {selectedIds.size} selecionada{selectedIds.size > 1 ? 's' : ''}
+          </span>
+          <div className="flex-1" />
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleBulkDelete}
+            disabled={bulkDeleting}
+            className="gap-1.5"
+          >
+            {bulkDeleting
+              ? <LoaderCircleIcon className="size-4 animate-spin" />
+              : <Trash2Icon className="size-4" />}
+            Deletar
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelectedIds(new Set())}
+            disabled={bulkDeleting}
+          >
+            Cancelar
+          </Button>
+        </div>
+      )}
 
       <Dialog open={isOpen} onOpenChange={open => !open && store.close()}>
         <DialogContent className="max-h-[90vh] overflow-y-auto">
@@ -115,7 +194,6 @@ export function AdminHospitalsPage() {
                 )}
               </div>
             ))}
-            {/* Senha */}
             <div className="space-y-1.5">
               <Label htmlFor="h-password">{editId ? 'Nova senha (opcional)' : 'Senha de acesso'}</Label>
               <Input
@@ -156,6 +234,9 @@ export function AdminHospitalsPage() {
         sortColumn={sortColumn}
         sortOrder={sortOrder}
         onSort={handleSort}
+        selectable
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
         toolbar={
           <FilterToolbar
             search={search}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import JSZip from 'jszip'
 import { useExamList } from '@/hooks/useExamList'
 import { DataTable } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
@@ -11,10 +12,11 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { useQuery, useMutation } from '@apollo/client/react'
+import { toast } from 'sonner'
 import { GET_HOSPITALS } from '@/graphql/queries/hospitals'
-import { UPDATE_EXAM_STATUS } from '@/graphql/mutations/exams'
-import { formatCPF, formatDate } from '@/lib/utils'
-
+import { UPDATE_EXAM_STATUS, DELETE_EXAMS } from '@/graphql/mutations/exams'
+import { formatCPF, formatDate, friendlyError } from '@/lib/utils'
+import { Trash2Icon, DownloadIcon, LoaderCircleIcon, ArchiveIcon } from 'lucide-react'
 
 const ALL = '__all__'
 
@@ -46,6 +48,10 @@ export function AdminExamListPage() {
   const [editExam, setEditExam] = useState<ExamRow | null>(null)
   const [editStatus, setEditStatus] = useState('')
   const [updateStatus, { loading: saving }] = useMutation(UPDATE_EXAM_STATUS)
+  const [deleteExams, { loading: bulkDeleting }] = useMutation(DELETE_EXAMS)
+
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkDownloading, setBulkDownloading] = useState(false)
 
   const handleEditOpen = (row: ExamRow) => {
     setEditExam(row)
@@ -55,11 +61,79 @@ export function AdminExamListPage() {
   const handleEditSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editExam) return
-    await updateStatus({ variables: { id: editExam.id, status: editStatus } })
-    setEditExam(null)
-    refetch()
+    try {
+      await updateStatus({ variables: { id: editExam.id, status: editStatus } })
+      toast.success('Status do exame atualizado com sucesso!')
+      setEditExam(null)
+      refetch()
+    } catch (err) {
+      toast.error(friendlyError(err))
+    }
   }
-  
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return
+    const count = selectedIds.size
+    try {
+      await deleteExams({ variables: { ids: Array.from(selectedIds) } })
+      toast.success(`${count} exame${count > 1 ? 's removidos' : ' removido'} com sucesso!`)
+      setSelectedIds(new Set())
+      refetch()
+    } catch (err) {
+      toast.error(friendlyError(err))
+    }
+  }
+
+  const handleBulkDownload = async () => {
+    if (selectedIds.size === 0) return
+    setBulkDownloading(true)
+    const toastId = toast.loading(`Preparando ZIP com ${selectedIds.size} exame${selectedIds.size > 1 ? 's' : ''}...`)
+    const token = localStorage.getItem('token')
+    const apiUrl = import.meta.env.VITE_API_URL ?? ''
+    const zip = new JSZip()
+    let failed = 0
+
+    for (const id of selectedIds) {
+      try {
+        const response = await fetch(`${apiUrl}/api/exams/${id}/download`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (!response.ok) { failed++; continue }
+        const blob = await response.blob()
+        const exam = (data as ExamRow[]).find(r => r.id === id)
+        const filename = exam ? `${exam.name}.pdf` : `exame-${id}.pdf`
+        zip.file(filename, blob)
+      } catch {
+        failed++
+      }
+    }
+
+    const ok = selectedIds.size - failed
+    if (ok === 0) {
+      toast.dismiss(toastId)
+      toast.error('Não foi possível baixar nenhum PDF. Tente novamente.')
+      setBulkDownloading(false)
+      return
+    }
+
+    const zipBlob = await zip.generateAsync({ type: 'blob' })
+    const url = URL.createObjectURL(zipBlob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `exames-${new Date().toISOString().slice(0, 10)}.zip`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+
+    toast.dismiss(toastId)
+    if (failed === 0)
+      toast.success(`ZIP gerado com ${ok} exame${ok > 1 ? 's' : ''} baixado${ok > 1 ? 's' : ''} com sucesso!`)
+    else
+      toast.warning(`ZIP gerado com ${ok} exame${ok > 1 ? 's' : ''}. ${failed} não pôde${failed > 1 ? 'ram' : ''} ser incluído${failed > 1 ? 's' : ''}.`)
+
+    setBulkDownloading(false)
+  }
 
   const columns = [
     { key: 'id', label: 'ID', sortable: true },
@@ -89,6 +163,47 @@ export function AdminExamListPage() {
 
   return (
     <div className="space-y-4">
+
+      {/* Bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-[16px] shadow-[0_2px_8px_rgba(46,58,89,0.06)] border border-[#E8ECF4]">
+          <span className="text-sm font-semibold text-[#2E3A59]">
+            {selectedIds.size} selecionado{selectedIds.size > 1 ? 's' : ''}
+          </span>
+          <div className="flex-1" />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleBulkDownload}
+            disabled={bulkDownloading || bulkDeleting}
+            className="gap-1.5"
+          >
+            {bulkDownloading
+              ? <LoaderCircleIcon className="size-4 animate-spin" />
+              : <ArchiveIcon className="size-4" />}
+            {bulkDownloading ? 'Gerando ZIP...' : 'Baixar exames'}
+          </Button>
+          <Button
+            size="sm"
+            onClick={handleBulkDelete}
+            disabled={bulkDeleting || bulkDownloading}
+            className="gap-1.5 bg-red-600 hover:bg-red-700 text-white"
+          >
+            {bulkDeleting
+              ? <LoaderCircleIcon className="size-4 animate-spin" />
+              : <Trash2Icon className="size-4" />}
+            {bulkDeleting ? 'Removendo...' : 'Deletar'}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelectedIds(new Set())}
+            disabled={bulkDeleting || bulkDownloading}
+          >
+            Cancelar
+          </Button>
+        </div>
+      )}
 
       <Dialog open={!!editExam} onOpenChange={open => !open && setEditExam(null)}>
         <DialogContent>
@@ -120,6 +235,9 @@ export function AdminExamListPage() {
         sortColumn={sortColumn}
         sortOrder={sortOrder}
         onSort={handleSort}
+        selectable
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
         toolbar={
           <FilterToolbar
             search={search}

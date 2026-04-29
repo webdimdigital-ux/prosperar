@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { MoreHorizontalIcon, EyeIcon, Trash2Icon, DownloadIcon, PencilIcon, LoaderCircleIcon } from 'lucide-react'
 import { useMutation } from '@apollo/client/react'
+import { toast } from 'sonner'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { usePdfPreview } from '@/hooks/usePdfPreview'
 import { useDownload } from '@/hooks/useDownload'
 import { PdfViewerDialog } from '@/components/shared/PdfViewerDialog'
 import { DELETE_EXAM } from '@/graphql/mutations/exams'
+import { friendlyError } from '@/lib/utils'
 
 interface Props {
   examId: string
@@ -37,9 +39,15 @@ export function ExamActionsMenu({ examId, examName, clientName, examDate, isAdmi
 
   const handleDelete = async () => {
     if (!confirmDelete) { setConfirmDelete(true); return }
-    await deleteExam({ variables: { id: examId } })
-    setConfirmDelete(false)
-    onDeleted?.()
+    try {
+      await deleteExam({ variables: { id: examId } })
+      toast.success('Exame removido com sucesso!')
+      setConfirmDelete(false)
+      onDeleted?.()
+    } catch (err) {
+      toast.error(friendlyError(err))
+      setConfirmDelete(false)
+    }
   }
 
   return (
@@ -73,6 +81,7 @@ export function ExamActionsMenu({ examId, examName, clientName, examDate, isAdmi
               <DropdownMenuItem
                 className="text-red-600 focus:text-red-600 focus:bg-red-50"
                 onClick={handleDelete}
+                onSelect={e => e.preventDefault()}
                 disabled={deleting}
               >
                 <Trash2Icon className="size-4" />

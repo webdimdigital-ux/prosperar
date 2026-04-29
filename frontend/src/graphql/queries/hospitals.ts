@@ -24,3 +24,9 @@ export const UPDATE_HOSPITAL = gql`
     }
   }
 `
+
+export const DELETE_HOSPITAL = gql`
+  mutation DeleteHospital($id: ID!) {
+    deleteHospital(id: $id)
+  }
+`

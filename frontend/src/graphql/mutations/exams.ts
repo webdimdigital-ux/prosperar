@@ -13,3 +13,9 @@ export const DELETE_EXAM = gql`
     deleteExam(id: $id)
   }
 `
+
+export const DELETE_EXAMS = gql`
+  mutation DeleteExams($ids: [ID!]!) {
+    deleteExams(ids: $ids)
+  }
+`

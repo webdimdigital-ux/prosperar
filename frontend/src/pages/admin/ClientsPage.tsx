@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
-import { GET_CLIENTS, CREATE_CLIENT, UPDATE_CLIENT } from '@/graphql/queries/clients'
-import { formatCPF, formatPhone, formatDateMask, parseDateMask } from '@/lib/utils'
+import { toast } from 'sonner'
+import { GET_CLIENTS, CREATE_CLIENT, UPDATE_CLIENT, DELETE_CLIENT } from '@/graphql/queries/clients'
+import { formatCPF, formatPhone, formatDateMask, parseDateMask, friendlyError } from '@/lib/utils'
 import { useClientFormStore } from '@/stores/clientFormStore'
 import { DataTable } from '@/components/shared/DataTable'
 import { Pagination } from '@/components/shared/Pagination'
@@ -12,8 +13,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { MoreHorizontalIcon, PencilIcon } from 'lucide-react'
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { MoreHorizontalIcon, PencilIcon, Trash2Icon } from 'lucide-react'
 
 const ALL = '__all__'
 
@@ -35,6 +36,7 @@ export function AdminClientsPage() {
 
   const [createClient, { loading: creating }] = useMutation(CREATE_CLIENT)
   const [updateClient, { loading: updating }] = useMutation(UPDATE_CLIENT)
+  const [deleteClient] = useMutation(DELETE_CLIENT)
 
   const clients = data?.clients?.data ?? []
   const paginatorInfo = data?.clients?.paginatorInfo
@@ -55,24 +57,30 @@ export function AdminClientsPage() {
     e.preventDefault()
     if (!store.validate()) return
     const { fields, editId } = store
-    if (editId) {
-      const input: Record<string, string> = { name: fields.name, email: fields.email, phone: fields.phone.replace(/\D/g, ''), status: fields.status }
-      if (fields.birth_date) input.birth_date = fields.birth_date
-      if (fields.password) input.password = fields.password
-      await updateClient({ variables: { id: editId, input } })
-    } else {
-      await createClient({ variables: { input: {
-        name: fields.name,
-        email: fields.email,
-        cpf: fields.cpf.replace(/\D/g, ''),
-        phone: fields.phone.replace(/\D/g, '') || null,
-        birth_date: fields.birth_date || null,
-        password: fields.password,
-        status: fields.status,
-      } } })
+    try {
+      if (editId) {
+        const input: Record<string, string> = { name: fields.name, email: fields.email, phone: fields.phone.replace(/\D/g, ''), status: fields.status }
+        if (fields.birth_date) input.birth_date = fields.birth_date
+        if (fields.password) input.password = fields.password
+        await updateClient({ variables: { id: editId, input } })
+        toast.success('Paciente atualizado com sucesso!')
+      } else {
+        await createClient({ variables: { input: {
+          name: fields.name,
+          email: fields.email,
+          cpf: fields.cpf.replace(/\D/g, ''),
+          phone: fields.phone.replace(/\D/g, '') || null,
+          birth_date: fields.birth_date || null,
+          password: fields.password,
+          status: fields.status,
+        } } })
+        toast.success('Paciente cadastrado com sucesso!')
+      }
+      store.close()
+      refetch()
+    } catch (err) {
+      toast.error(friendlyError(err))
     }
-    store.close()
-    refetch()
   }
 
   const columns = [
@@ -107,6 +115,18 @@ export function AdminClientsPage() {
             }}>
               <PencilIcon className="size-4 text-[#7C8DB5]" />
               Editar
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-red-600 focus:text-red-600 focus:bg-red-50"
+              onClick={() =>
+                deleteClient({ variables: { id: r.id } })
+                  .then(() => { toast.success('Paciente removido com sucesso!'); refetch() })
+                  .catch(err => toast.error(friendlyError(err)))
+              }
+            >
+              <Trash2Icon className="size-4" />
+              Remover
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

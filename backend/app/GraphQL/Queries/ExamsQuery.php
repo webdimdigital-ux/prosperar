@@ -26,10 +26,19 @@ class ExamsQuery
 
         if (! empty($args['search'])) {
             $search = $args['search'];
-            $query->where(function (Builder $q) use ($search) {
+            $digits = preg_replace('/\D/', '', $search);
+            $query->where(function (Builder $q) use ($search, $digits) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhereHas('client', fn ($q) => $q->where('name', 'like', "%{$search}%"))
+                  ->orWhere('cpf', 'like', "%{$search}%")
+                  ->orWhereHas('client', fn ($q) => $q
+                      ->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('cpf', 'like', "%{$search}%")
+                  )
                   ->orWhereHas('hospital', fn ($q) => $q->where('name', 'like', "%{$search}%"));
+                if ($digits !== '') {
+                    $q->orWhereRaw("REGEXP_REPLACE(cpf, '[^0-9]', '') LIKE ?", ["%{$digits}%"]);
+                }
             });
         }
 

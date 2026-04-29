@@ -61,3 +61,21 @@ export function formatDate(value: string | null | undefined): string {
   if (!value) return ''
   return format(new Date(value), 'dd/MM/yyyy')
 }
+
+export function friendlyError(err: unknown): string {
+  if (!(err instanceof Error)) return 'Ocorreu um erro inesperado.'
+  const msg = err.message.toLowerCase()
+  if (msg.includes('unauthenticated') || msg.includes('unauthorized') || msg.includes('permissão'))
+    return 'Você não tem permissão para esta ação.'
+  if (msg.includes('already') && msg.includes('email'))
+    return 'Este e-mail já está cadastrado.'
+  if (msg.includes('not found'))
+    return 'Registro não encontrado.'
+  if (msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch'))
+    return 'Erro de conexão. Verifique sua internet e tente novamente.'
+  if (msg.includes('invalid credentials') || msg.includes('these credentials'))
+    return 'E-mail ou senha inválidos.'
+  if (msg.includes('validation'))
+    return 'Verifique os dados preenchidos e tente novamente.'
+  return err.message
+}

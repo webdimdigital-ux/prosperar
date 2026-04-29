@@ -33,7 +33,13 @@ export function LoginPage() {
       else if (role === 'hospital') navigate('/hospital/exams')
       else navigate('/client/exams')
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Falha no login')
+      const msg = err instanceof Error ? err.message.toLowerCase() : ''
+      if (msg.includes('credentials') || msg.includes('these credentials') || msg.includes('invalid'))
+        setError('E-mail ou senha incorretos. Verifique seus dados e tente novamente.')
+      else if (msg.includes('network') || msg.includes('fetch'))
+        setError('Erro de conexão. Verifique sua internet e tente novamente.')
+      else
+        setError('Não foi possível fazer login. Tente novamente.')
     }
   }
 

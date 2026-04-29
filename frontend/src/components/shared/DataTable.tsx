@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from '@/components/ui/table'
+import { Checkbox } from '@/components/ui/checkbox'
 
 export interface Column<T> {
   key: string
@@ -23,6 +24,9 @@ interface Props<T> {
   emptyMessage?: string
   toolbar?: ReactNode
   pagination?: ReactNode
+  selectable?: boolean
+  selectedIds?: Set<string>
+  onSelectionChange?: (ids: Set<string>) => void
 }
 
 const CARD = 'bg-white rounded-[20px] shadow-[0_4px_24px_rgba(46,58,89,0.08)] overflow-hidden'
@@ -31,7 +35,26 @@ export function DataTable<T extends { id: string | number }>({
   columns, data, loading, sortColumn, sortOrder, onSort,
   emptyMessage = 'Nenhum registro encontrado.',
   toolbar, pagination,
+  selectable, selectedIds, onSelectionChange,
 }: Props<T>) {
+
+  const allIds = data.map(r => String(r.id))
+  const allSelected = allIds.length > 0 && allIds.every(id => selectedIds?.has(id))
+  const someSelected = !allSelected && allIds.some(id => selectedIds?.has(id))
+
+  const toggleAll = (checked: boolean) => {
+    if (!onSelectionChange) return
+    if (checked) onSelectionChange(new Set(allIds))
+    else onSelectionChange(new Set())
+  }
+
+  const toggleRow = (id: string, checked: boolean) => {
+    if (!onSelectionChange || !selectedIds) return
+    const next = new Set(selectedIds)
+    if (checked) next.add(id)
+    else next.delete(id)
+    onSelectionChange(next)
+  }
 
   if (loading) {
     return (
@@ -55,17 +78,24 @@ export function DataTable<T extends { id: string | number }>({
 
   return (
     <div className={CARD}>
-      {/* Toolbar */}
       {toolbar && (
         <div className="px-5 py-4 border-b border-[#F0F3F8]">
           {toolbar}
         </div>
       )}
 
-      {/* Table */}
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent border-b border-[#F0F3F8] bg-[#FAFBFD]">
+            {selectable && (
+              <TableHead className="w-10 px-4 py-3.5">
+                <Checkbox
+                  checked={allSelected}
+                  indeterminate={someSelected}
+                  onCheckedChange={toggleAll}
+                />
+              </TableHead>
+            )}
             {columns.map(col => (
               <TableHead
                 key={col.key}
@@ -95,39 +125,51 @@ export function DataTable<T extends { id: string | number }>({
           {data.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={columns.length}
+                colSpan={columns.length + (selectable ? 1 : 0)}
                 className="py-12 px-5 text-center text-sm text-[#9BA8C2]"
               >
                 {emptyMessage}
               </TableCell>
             </TableRow>
           ) : (
-            data.map((row, idx) => (
-              <TableRow
-                key={row.id}
-                className={cn(
-                  'transition-colors hover:bg-[#FAFBFD]',
-                  idx === data.length - 1 && !pagination ? 'border-none' : 'border-b border-[#F5F7FB]',
-                )}
-              >
-                {columns.map(col => (
-                  <TableCell
-                    key={col.key}
-                    className={cn(
-                      col.compact ? 'px-3 py-2.5' : 'px-5 py-3.5',
-                      'text-[13px] text-[#2E3A59]',
-                    )}
-                  >
-                    {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '')}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
+            data.map((row, idx) => {
+              const id = String(row.id)
+              const isSelected = selectedIds?.has(id) ?? false
+              return (
+                <TableRow
+                  key={row.id}
+                  className={cn(
+                    'transition-colors hover:bg-[#FAFBFD]',
+                    isSelected && 'bg-[#FFF5F3]',
+                    idx === data.length - 1 && !pagination ? 'border-none' : 'border-b border-[#F5F7FB]',
+                  )}
+                >
+                  {selectable && (
+                    <TableCell className="w-10 px-4 py-2.5">
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={checked => toggleRow(id, checked)}
+                      />
+                    </TableCell>
+                  )}
+                  {columns.map(col => (
+                    <TableCell
+                      key={col.key}
+                      className={cn(
+                        col.compact ? 'px-3 py-2.5' : 'px-5 py-3.5',
+                        'text-[13px] text-[#2E3A59]',
+                      )}
+                    >
+                      {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '')}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              )
+            })
           )}
         </TableBody>
       </Table>
 
-      {/* Pagination */}
       {pagination && (
         <div className="border-t border-[#F0F3F8] px-4 py-2">
           {pagination}

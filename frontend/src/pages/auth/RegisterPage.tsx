@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@apollo/client/react'
+import { toast } from 'sonner'
 import { REGISTER } from '@/graphql/mutations/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { CheckCircle2 } from 'lucide-react'
-import { formatCPF, formatPhone, formatDateMask, parseDateMask, validateCPF, validateEmail } from '@/lib/utils'
+import { formatCPF, formatPhone, formatDateMask, parseDateMask, validateCPF, validateEmail, friendlyError } from '@/lib/utils'
 
 const FEATURES = [
   'Acesse seus resultados de exames a qualquer hora',
@@ -83,9 +84,16 @@ export function RegisterPage() {
           },
         },
       })
+      toast.success('Conta criada com sucesso! Faça login para continuar.')
       navigate('/login')
     } catch (err: unknown) {
-      setServerError(err instanceof Error ? err.message : 'Falha no cadastro')
+      const msg = err instanceof Error ? err.message.toLowerCase() : ''
+      if (msg.includes('already') && msg.includes('email'))
+        setServerError('Este e-mail já está cadastrado. Tente outro ou faça login.')
+      else if (msg.includes('cpf'))
+        setServerError('CPF já cadastrado em nossa base de dados.')
+      else
+        setServerError(friendlyError(err))
     }
   }
 

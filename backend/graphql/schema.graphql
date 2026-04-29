@@ -71,6 +71,15 @@ type Mutation {
 
     deleteExam(id: ID!): Boolean
         @field(resolver: "App\\GraphQL\\Mutations\\DeleteExamMutation") @guard
+
+    deleteExams(ids: [ID!]!): Boolean
+        @field(resolver: "App\\GraphQL\\Mutations\\DeleteExamsMutation") @guard
+
+    deleteHospital(id: ID!): Boolean
+        @field(resolver: "App\\GraphQL\\Mutations\\DeleteHospitalMutation") @guard
+
+    deleteClient(id: ID!): Boolean
+        @field(resolver: "App\\GraphQL\\Mutations\\DeleteClientMutation") @guard
 }
 
 # ─── Types ───────────────────────────────────────────────────────────────────

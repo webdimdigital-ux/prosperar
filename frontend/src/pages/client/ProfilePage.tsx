@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useMutation } from '@apollo/client/react'
+import { toast } from 'sonner'
 import { UPDATE_PROFILE } from '@/graphql/mutations/auth'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { formatCPF, formatPhone, formatDateMask, parseDateMask } from '@/lib/utils'
+import { formatCPF, formatPhone, formatDateMask, parseDateMask, friendlyError } from '@/lib/utils'
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
@@ -29,8 +30,6 @@ export function ProfilePage() {
     password_confirmation: '',
   })
   const [errors, setErrors] = useState<Partial<Record<keyof typeof form, string>>>({})
-  const [success, setSuccess] = useState(false)
-  const [serverError, setServerError] = useState('')
   const [updateProfile, { loading }] = useMutation(UPDATE_PROFILE)
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,8 +74,6 @@ export function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
-    setServerError('')
-    setSuccess(false)
     try {
       const input: Record<string, string> = { name: form.name }
       if (form.phone) input.phone = form.phone.replace(/\D/g, '')
@@ -95,26 +92,16 @@ export function ProfilePage() {
           birth_date: data.updateProfile.birth_date ?? null,
         })
       }
-      setSuccess(true)
+      toast.success('Perfil atualizado com sucesso!')
+      setForm(f => ({ ...f, password: '', password_confirmation: '' }))
     } catch (err: unknown) {
-      setServerError(err instanceof Error ? err.message : 'Falha ao atualizar')
+      toast.error(friendlyError(err))
     }
   }
 
   return (
     <div className="max-w-md space-y-4">
       <h1 className="text-lg font-semibold text-[#2E3A59]">Perfil</h1>
-
-      {success && (
-        <div className="p-3 bg-green-50 text-green-700 rounded-xl text-sm border border-green-200">
-          Perfil atualizado.
-        </div>
-      )}
-      {serverError && (
-        <div className="p-3 bg-destructive/10 text-destructive rounded-xl text-sm">
-          {serverError}
-        </div>
-      )}
 
       <div className="bg-white rounded-[20px] shadow-[0_4px_24px_rgba(46,58,89,0.08)] p-6">
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client/react'
+import { toast } from 'sonner'
 import { UPLOAD_EXAM } from '@/graphql/queries/exams'
 import { GET_HOSPITALS } from '@/graphql/queries/hospitals'
 import { useUploadFormStore } from '@/stores/uploadFormStore'
@@ -9,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/date-picker'
 import { UploadCloudIcon, FileTextIcon, XIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, friendlyError } from '@/lib/utils'
 
 interface PageError { page: number; reason: string }
 interface UploadResult { total: number; processed: number; failed: number; errors: PageError[] }
@@ -36,11 +37,20 @@ export function UploadExamPage() {
         variables: { input: { ...store.fields, file: store.file } },
         context: { headers: { 'Apollo-Require-Preflight': 'true' } },
       })
-      setResult(data.uploadExam)
+      const r: UploadResult = data.uploadExam
+      setResult(r)
       store.reset()
       if (fileRef.current) fileRef.current.value = ''
+      if (r.failed === 0)
+        toast.success(`Upload concluído! ${r.processed} exame${r.processed > 1 ? 's' : ''} processado${r.processed > 1 ? 's' : ''} com sucesso.`)
+      else if (r.processed > 0)
+        toast.warning(`${r.processed} exame${r.processed > 1 ? 's' : ''} processado${r.processed > 1 ? 's' : ''}, mas ${r.failed} página${r.failed > 1 ? 's' : ''} com erro.`)
+      else
+        toast.error('Não foi possível processar nenhuma página do PDF. Verifique o arquivo.')
     } catch (err: unknown) {
-      setServerError(err instanceof Error ? err.message : 'Falha no upload')
+      const msg = friendlyError(err)
+      setServerError(msg)
+      toast.error(msg)
     }
   }
 

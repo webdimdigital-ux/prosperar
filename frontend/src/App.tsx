@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ApolloProvider } from '@apollo/client/react'
+import { Toaster } from 'sonner'
 import { apolloClient } from '@/lib/apollo'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import { AppLayout } from '@/components/layout/AppLayout'
@@ -105,6 +106,7 @@ export default function App() {
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>
+        <Toaster richColors position="top-right" duration={4000} />
       </AuthProvider>
     </ApolloProvider>
   )
