@@ -16,7 +16,7 @@ import { toast } from 'sonner'
 import { GET_HOSPITALS } from '@/graphql/queries/hospitals'
 import { UPDATE_EXAM_STATUS, DELETE_EXAMS } from '@/graphql/mutations/exams'
 import { formatCPF, formatDate, friendlyError } from '@/lib/utils'
-import { Trash2Icon, DownloadIcon, LoaderCircleIcon, ArchiveIcon } from 'lucide-react'
+import { Trash2Icon, LoaderCircleIcon, ArchiveIcon } from 'lucide-react'
 
 const ALL = '__all__'
 
