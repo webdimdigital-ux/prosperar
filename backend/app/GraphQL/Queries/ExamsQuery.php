@@ -27,15 +27,24 @@ class ExamsQuery
         if (! empty($args['search'])) {
             $search = $args['search'];
             $digits = preg_replace('/\D/', '', $search);
-            $query->where(function (Builder $q) use ($search, $digits) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('cpf', 'like', "%{$search}%")
-                  ->orWhereHas('client', fn ($q) => $q
-                      ->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('cpf', 'like', "%{$search}%")
-                  )
-                  ->orWhereHas('hospital', fn ($q) => $q->where('name', 'like', "%{$search}%"));
+            $terms = array_values(array_filter(array_map('trim', explode(' ', $search))));
+            $query->where(function (Builder $q) use ($search, $digits, $terms) {
+                $q->where(function (Builder $sub) use ($terms) {
+                    foreach ($terms as $term) {
+                        $sub->where('name', 'like', "%{$term}%");
+                    }
+                })
+                ->orWhereHas('client', fn ($sub) => $sub
+                    ->where(function (Builder $inner) use ($terms) {
+                        foreach ($terms as $term) {
+                            $inner->where('name', 'like', "%{$term}%");
+                        }
+                    })
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('cpf', 'like', "%{$search}%")
+                )
+                ->orWhereHas('hospital', fn ($sub) => $sub->where('name', 'like', "%{$search}%"))
+                ->orWhere('cpf', 'like', "%{$search}%");
                 if ($digits !== '') {
                     $q->orWhereRaw("REGEXP_REPLACE(cpf, '[^0-9]', '') LIKE ?", ["%{$digits}%"]);
                 }

@@ -27,10 +27,15 @@ class ClientsQuery
 
         if (! empty($args['search'])) {
             $search = $args['search'];
-            $query->where(function (Builder $q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('cpf', 'like', "%{$search}%");
+            $terms = array_values(array_filter(array_map('trim', explode(' ', $search))));
+            $query->where(function (Builder $q) use ($search, $terms) {
+                $q->where(function (Builder $sub) use ($terms) {
+                    foreach ($terms as $term) {
+                        $sub->where('name', 'like', "%{$term}%");
+                    }
+                })
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('cpf', 'like', "%{$search}%");
             });
         }
 
