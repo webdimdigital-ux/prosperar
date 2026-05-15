@@ -11,9 +11,8 @@ use setasign\Fpdi\Fpdi;
 
 class PdfExamService
 {
-    // Padrões de extração — neste formato (espirômetro Koko/ASF) os valores
-    // aparecem ANTES dos seus labels no texto extraído do PDF.
-    private const PATTERNS = [
+    // Format A: espirômetro Koko/ASF — altura e peso na mesma linha
+    private const PATTERNS_A = [
         'id'         => '#ID:\s*(\S+)#i',
         'cpf'        => '#(\d{3}[.]\d{3}[.]\d{3}[-./]\d{2})#',
         'medico'     => '#(Dr\.\s+[^\n]+)#iu',
@@ -27,6 +26,23 @@ class PdfExamService
         'altura_cm'  => '#^([\d,]+) [\d,]+\n(?:Female|Male|Feminino|Masculino)#mu',
         'peso_kg'    => '#^[\d,]+ ([\d,]+)\n(?:Female|Male|Feminino|Masculino)#mu',
         'tabagismo'  => '#Tabagismo\s*\(M/A\):\s*(\d+)#iu',
+    ];
+
+    // Format B: SPDM/Vila Prudente — cada valor em linha separada (altura, peso, tabagismo)
+    private const PATTERNS_B = [
+        'id'         => '#ID:\s*(\S+)#i',
+        'cpf'        => '#(\d{3}[.]\d{3}[.]\d{3}[-./]\d{2})#',
+        'medico'     => '#(Dr\.\s+[^\n]+)#iu',
+        'crm'        => '#(CRM-\w+\s*:\s*\d+)#iu',
+        'nome'       => '#^(.+)\n\d{2}/\d{2}/\d{4}\n#mu',
+        'data_nasc'  => '#^(\d{2}/\d{2}/\d{4})\n[\d,]+\n[\d,]+#mu',
+        'sexo'       => '#^(Female|Male|Feminino|Masculino)\n(?:Pereira|Polgar|Crapo)#imu',
+        'diagnostico'=> '#^([^\n]+)\n[\p{L}][\p{L} ]+\n\d{2}/\d{2}/\d{2}(?!\d)[^\n]*\n\d+\nNome:#mu',
+        'tecnico'    => '#^([\p{L}][\p{L} ]+)\n\d{2}/\d{2}/\d{2}(?!\d)#mu',
+        'idade'      => '#^(\d+)\nNome:#mu',
+        'altura_cm'  => '#^([\d,]+)\n[\d,]+\n\d+\n(?:Female|Male|Feminino|Masculino)#mu',
+        'peso_kg'    => '#^[\d,]+\n([\d,]+)\n\d+\n(?:Female|Male|Feminino|Masculino)#mu',
+        'tabagismo'  => '#^(\d+)\n(?:Female|Male|Feminino|Masculino)#mu',
     ];
 
     public function process(UploadedFile $file, int $hospitalId, string $examDate, ?string $observations, int $uploadedBy): array
@@ -98,10 +114,20 @@ class PdfExamService
         return compact('total', 'processed', 'failed', 'errors', 'exams');
     }
 
+    private function detectFormat(string $text): string
+    {
+        // Format B: birth date is followed by height and weight on separate lines (no space between them on same line)
+        if (preg_match('#^\d{2}/\d{2}/\d{4}\n[\d,]+\n[\d,]+#mu', $text)) {
+            return 'B';
+        }
+        return 'A';
+    }
+
     private function extractAll(string $text): array
     {
+        $patterns = $this->detectFormat($text) === 'B' ? self::PATTERNS_B : self::PATTERNS_A;
         $result = [];
-        foreach (self::PATTERNS as $key => $pattern) {
+        foreach ($patterns as $key => $pattern) {
             if (preg_match($pattern, $text, $m)) {
                 $result[$key] = trim($m[1]);
             } else {
